@@ -2,6 +2,8 @@
 ## Eclipse
 #################
 
+data/
+tensorflow/
 *.pydevproject
 .project
 .metadata
