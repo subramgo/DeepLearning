@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+.ipynb_checkpoints
 data/
 tensorflow/
 *.pydevproject
