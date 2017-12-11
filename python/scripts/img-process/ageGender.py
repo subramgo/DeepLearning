@@ -23,7 +23,7 @@ nb_class = 10
 
 print("Total Training Images {}".format(data_size))
 
-
+print("x_train shape {}".format(x_train.shape))
 x_train = hdf5_file['train_images']
 y_train = hdf5_file['train_labels']
 
@@ -119,7 +119,7 @@ callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, v
 
 
 model = age_gender_model()
-batch_size = 64
+batch_size = 32
 epochs = 100
 
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
