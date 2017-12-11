@@ -3,7 +3,7 @@ import h5py
 #import matplotlib.pyplot as plt
 import random
 from keras.utils import np_utils
-from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Flatten, Activation,Dense, Dropout, BatchNormalization
+from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Flatten, Activation,Dense, Dropout, BatchNormalization,GlobalAveragePooling2D
 from keras.models import Model
 from keras.backend import tf as ktf
 from keras import optimizers
@@ -86,7 +86,7 @@ def age_gender_model():
     x = BatchNormalization()(x)
     
     
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D()(x)
     
     x = Dense(512, activation = "relu")(x)
     
