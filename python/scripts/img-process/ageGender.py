@@ -59,7 +59,7 @@ def age_gender_model():
     
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
     
     # Conv Layer 2
     
@@ -71,7 +71,7 @@ def age_gender_model():
 
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
 
     # Conv Layer 3
     
