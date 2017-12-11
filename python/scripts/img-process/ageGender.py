@@ -52,7 +52,7 @@ def age_gender_model():
     
     # Conv Layer 1
     
-    x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
+    x = Conv2D(filters = 50, kernel_size = (7,7), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
@@ -63,7 +63,7 @@ def age_gender_model():
     
     # Conv Layer 2
     
-    x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
+    x = Conv2D(filters = 100, kernel_size = (5,5), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -75,7 +75,7 @@ def age_gender_model():
 
     # Conv Layer 3
     
-    x = Conv2D(filters = 384, kernel_size = (3,3), strides = (1,1), 
+    x = Conv2D(filters = 200, kernel_size = (3,3), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -88,11 +88,11 @@ def age_gender_model():
     
     x = GlobalAveragePooling2D()(x)
     
-    x = Dense(512, activation = "relu")(x)
+    x = Dense(120, activation = "relu")(x)
     
     x = Dropout(rate = 0.5)(x)
     
-    x = Dense(512, activation ="relu")(x)
+    x = Dense(120, activation ="relu")(x)
     
     x = Dropout(rate = 0.5)(x)
 
