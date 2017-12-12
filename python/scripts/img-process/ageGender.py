@@ -8,7 +8,9 @@ from keras.models import Model
 from keras.backend import tf as ktf
 from keras import optimizers
 from keras.callbacks import History, EarlyStopping
+import keras.backend as K
 
+K.set_image_data_format('channels_last')
 import numpy as np
 np.random.seed(123)
 
@@ -23,10 +25,10 @@ nb_class = 10
 
 print("Total Training Images {}".format(data_size))
 
-print("x_train shape {}".format(x_train.shape))
 x_train = hdf5_file['train_images']
 y_train = hdf5_file['train_labels']
 
+print(x_train.shape)
 
 y_train_1 = y_train[:,0]
 y_train_2 = y_train[:,1]
@@ -83,7 +85,7 @@ def age_gender_model():
 
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
     
     
     x = GlobalAveragePooling2D()(x)
@@ -125,7 +127,7 @@ epochs = 100
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
 
-hist = model.fit(x_train, y_train_onecoding, batch_size=32,validation_split = 0.1,
+hist = model.fit(x_train, y_train_onecoding, batch_size=10,validation_split = 0.0,
                      epochs=epochs, callbacks = callbacks, verbose = 1)
 
 
