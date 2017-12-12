@@ -127,7 +127,7 @@ epochs = 100
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
 
-hist = model.fit(x_train, y_train_onecoding, batch_size=10,validation_split = 0.0,
+hist = model.fit(x_train, y_train_onecoding, batch_size=1,
                      epochs=epochs, callbacks = callbacks, verbose = 1)
 
 
