@@ -136,6 +136,8 @@ Desktop.ini
 
 *.py[co]
 
+*/venv/*
+
 # Packages
 *.egg
 *.egg-info

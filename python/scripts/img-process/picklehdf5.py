@@ -1,9 +1,9 @@
+""" Convert Adience data from HDF5 format to pickle of numpy dataframe """
+
 import h5py
 import numpy as np
 import pickle as pkl
 from keras.utils import np_utils
-
-
 
 
 

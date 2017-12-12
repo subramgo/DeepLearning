@@ -11,9 +11,12 @@ from hyperas.distributions import loguniform
 import numpy as np
 np.random.seed(123)
 
-
-
-
+"""
+Hyperas Debugging:
+via https://github.com/maxpumperla/hyperas#typeerror-generator-object-is-not-subscriptable
+    This is currently a known issue.
+    Just `pip install networkx==1.11`
+"""
 
 def mnist_data():
     """

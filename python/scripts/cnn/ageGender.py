@@ -1,3 +1,9 @@
+"""
+Classification model for Age and Gender
+
+Uses Adience data for training.
+"""
+
 import numpy as np
 import h5py
 #import matplotlib.pyplot as plt
@@ -130,5 +136,6 @@ model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["
 hist = model.fit(x_train, y_train_onecoding, batch_size=1,
                      epochs=epochs, callbacks = callbacks, verbose = 1)
 
-
+## TODO: evaluate insample test (`hist` object) 
+## TODO: serialize model for domain transfer testing
 
