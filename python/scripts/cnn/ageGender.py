@@ -15,6 +15,7 @@ from keras.backend import tf as ktf
 from keras import optimizers
 from keras.callbacks import History, EarlyStopping
 import keras.backend as K
+from utils.evaluate import Evaluate
 
 K.set_image_data_format('channels_last')
 import numpy as np
@@ -60,18 +61,18 @@ def age_gender_model():
     
     # Conv Layer 1
     
-    x = Conv2D(filters = 50, kernel_size = (7,7), strides = (1,1), \
+    x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
     
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    #x = BatchNormalization()(x)
+    x = BatchNormalization()(x)
     
     # Conv Layer 2
     
-    x = Conv2D(filters = 100, kernel_size = (5,5), strides = (1,1), 
+    x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -79,11 +80,11 @@ def age_gender_model():
 
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    #x = BatchNormalization()(x)
+    x = BatchNormalization()(x)
 
     # Conv Layer 3
     
-    x = Conv2D(filters = 200, kernel_size = (3,3), strides = (1,1), 
+    x = Conv2D(filters = 384, kernel_size = (3,3), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -91,16 +92,16 @@ def age_gender_model():
 
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
-    #x = BatchNormalization()(x)
+    x = BatchNormalization()(x)
     
     
-    x = GlobalAveragePooling2D()(x)
+    x = Flatten()(x)
     
-    x = Dense(120, activation = "relu")(x)
+    x = Dense(512, activation = "relu")(x)
     
     x = Dropout(rate = 0.5)(x)
     
-    x = Dense(120, activation ="relu")(x)
+    x = Dense(512, activation ="relu")(x)
     
     x = Dropout(rate = 0.5)(x)
 
@@ -127,14 +128,22 @@ callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, v
 
 
 model = age_gender_model()
-batch_size = 32
+batch_size = 4
 epochs = 100
 
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
 
-hist = model.fit(x_train, y_train_onecoding, batch_size=1,
+hist = model.fit(x_train, y_train_onecoding, batch_size = batch_size,
                      epochs=epochs, callbacks = callbacks, verbose = 1)
+
+model_path = '../models/age_gender_model.h5'
+model.save(model_path)
+del model 
+
+eval = Evaluate(model_path, x_train, y_train_onecoding, batch_size = 1)
+eval.process()
+
 
 ## TODO: evaluate insample test (`hist` object) 
 ## TODO: serialize model for domain transfer testing

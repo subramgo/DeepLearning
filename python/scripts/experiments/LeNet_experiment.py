@@ -95,10 +95,12 @@ if __name__ == "__main__":
     best_run, best_model = optim.minimize(model=lenet_model,
                                       data = mnist_data,
                                       algo=tpe.suggest,
-                                      max_evals=5,
+                                      max_evals=1,
                                       trials=Trials())
 
-    
+    # Save the model
+    best_model.save('../../models/lenet.h5')
+
     print("Evalutation of best performing model:")
     print(best_model.evaluate(x_test, y_test))
     print("Best performing model chosen hyper-parameters:")
