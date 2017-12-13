@@ -9,7 +9,7 @@ The script does the following
 1. Pre-process the labels txt file
 2. Create a new labels text file with image location and Y labels
 3. creates a h5py file to store the images and their labels. 
-	a. Images are resized to 256 x 26.
+	a. Images are resized to 256 x 256.
 
 
 """

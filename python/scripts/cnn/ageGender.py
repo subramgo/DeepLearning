@@ -21,7 +21,7 @@ import numpy as np
 np.random.seed(123)
 
 
-hdf5_path = '../../data/Adience/hdf5/adience.h5'
+hdf5_path = '../../../data/Adience/hdf5/adience.h5'
 hdf5_file = h5py.File(hdf5_path, mode = 'r')
 
 
