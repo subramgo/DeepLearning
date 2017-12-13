@@ -15,6 +15,8 @@ from keras.backend import tf as ktf
 from keras import optimizers
 from keras.callbacks import History, EarlyStopping
 import keras.backend as K
+import sys,os
+sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
 
 K.set_image_data_format('channels_last')
@@ -22,7 +24,7 @@ import numpy as np
 np.random.seed(123)
 
 
-hdf5_path = '../../../data/Adience/hdf5/adience.h5'
+hdf5_path = '../data/Adience/hdf5/adience.h5'
 hdf5_file = h5py.File(hdf5_path, mode = 'r')
 
 
@@ -134,7 +136,7 @@ epochs = 100
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
 
-hist = model.fit(x_train, y_train_onecoding, batch_size = batch_size,
+hist = model.fit(x_train, y_train_onecoding, batch_size = batch_size,shuffle="batch",
                      epochs=epochs, callbacks = callbacks, verbose = 1)
 
 model_path = '../models/age_gender_model.h5'
