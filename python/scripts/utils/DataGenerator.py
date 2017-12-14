@@ -3,7 +3,7 @@ import h5py
 from keras.utils import np_utils
 
 def adience_datagenerator(filepath, batchsize):
-	dimensions = (batchsize, 256, 256,3)
+	dimensions = (batchsize, 100, 100,3)
 	while 1:
 
 		f = h5py.File(filepath, "r")

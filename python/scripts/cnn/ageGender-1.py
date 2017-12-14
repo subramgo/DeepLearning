@@ -70,8 +70,8 @@ def age_gender_model():
 
 
 
-        
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D()(x)        
+    #x = Flatten()(x)
     
     x = Dense(512, activation = "relu")(x)
     
@@ -102,7 +102,7 @@ def build_model(model):
 
 
 
-    batch_size = 4
+    batch_size = 16
 
     epochs = 10
     hdf5_path = '../data/Adience/hdf5/adience-100.h5'
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     model = age_gender_model()
     batch_size = 32
     model_memory_params(batch_size, model)
-    #build_model(model)
+    build_model(model)
 
 
 
