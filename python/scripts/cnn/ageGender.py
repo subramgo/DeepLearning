@@ -20,7 +20,7 @@ sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
 
 K.set_image_data_format('channels_last')
-import numpy as np
+
 np.random.seed(123)
 
 
