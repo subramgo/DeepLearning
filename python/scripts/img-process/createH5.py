@@ -30,7 +30,7 @@ fnl_labels_path = '../../data/Adience/'
 # A single image to get height and width
 single_image = image_path + "30601258@N03/coarse_tilt_aligned_face.1.10399863183_a04f4c26a1_o.jpg"
 
-hdf5_path = '../../data/Adience/hdf5/adience.h5'
+hdf5_path = '../../data/Adience/hdf5/adience-100.h5'
 
 # Filters
 age_filter = {'(0, 2)' :0, '(4, 6)':1 , '(8, 12)':2, '(15, 20)':3,'(25, 32)':4,'(38, 43)':5, '(48, 53)':6, '(60, 100)':7}
