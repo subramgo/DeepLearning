@@ -19,6 +19,7 @@ import sys,os
 sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
 from utils.DataGenerator import adience_datagenerator
+from utils.memoryreqs import get_model_memory_usage
 
 K.set_image_data_format('channels_last')
 
@@ -108,6 +109,8 @@ callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, v
 
 model = age_gender_model()
 batch_size = 4
+
+print(get_model_memory_usage(batch_size, model))
 epochs = 10
 hdf5_path = '../data/Adience/hdf5/adience.h5'
 

@@ -2,12 +2,12 @@ from keras.layers import Input, Conv2D, Dense,AveragePooling2D, Flatten, Activat
 from keras.models import Model
 from keras.backend import tf as ktf
 from keras import optimizers
-
 from keras.datasets import mnist
 from keras.utils import np_utils
-from hyperas import optim
-from hyperopt import Trials, STATUS_OK, tpe
-from hyperas.distributions import loguniform
+import sys,os
+sys.path.append(os.getcwd())
+from utils.memoryreqs import get_model_memory_usage
+
 import numpy as np
 np.random.seed(123)
 
@@ -73,8 +73,9 @@ def lenet_model(x_train, y_train, x_test, y_test,nb_classes):
     predictions = Dense(nb_classes, activation="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
+    print(get_model_memory_usage(32,model))
 
-    sgd = optimizers.SGD(lr={{loguniform(-4,0)}}, momentum=0, decay=0, nesterov=False)
+    sgd = optimizers.SGD(lr=0.01, momentum=0, decay=0, nesterov=False)
     epochs = 2
     batch_size = 32
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
@@ -84,27 +85,19 @@ def lenet_model(x_train, y_train, x_test, y_test,nb_classes):
 
 
     accuracy = metrics[1]
-    return {'loss': (1-accuracy)*100, 'status': STATUS_OK, 'model': model}
+    print("loss {}".format( (1-accuracy)*100 ) )
+
+    # Save the model
+    model.save('../models/lenet.h5')
 
     
 
 
 if __name__ == "__main__":
-    
     x_train, y_train, x_test, y_test,nb_classes = mnist_data()
-    best_run, best_model = optim.minimize(model=lenet_model,
-                                      data = mnist_data,
-                                      algo=tpe.suggest,
-                                      max_evals=1,
-                                      trials=Trials())
+    lenet_model(x_train, y_train, x_test, y_test,nb_classes)
 
-    # Save the model
-    best_model.save('../../models/lenet.h5')
-
-    print("Evalutation of best performing model:")
-    print(best_model.evaluate(x_test, y_test))
-    print("Best performing model chosen hyper-parameters:")
-    print(best_run)
+    
 
     
 
