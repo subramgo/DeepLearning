@@ -6,7 +6,7 @@ from keras.datasets import mnist
 from keras.utils import np_utils
 import sys,os
 sys.path.append(os.getcwd())
-from utils.memoryreqs import get_model_memory_usage
+from utils.memoryreqs import get_model_memory_usage,model_memory_params
 
 import numpy as np
 np.random.seed(123)
@@ -73,11 +73,13 @@ def lenet_model(x_train, y_train, x_test, y_test,nb_classes):
     predictions = Dense(nb_classes, activation="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
-    print(get_model_memory_usage(32,model))
+
+    return model 
+
+def train_model(model,x_train, y_train, x_test, y_test,batch_size):
 
     sgd = optimizers.SGD(lr=0.01, momentum=0, decay=0, nesterov=False)
     epochs = 2
-    batch_size = 32
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     model.fit(x=x_train,y= y_train, validation_split = 0.1, batch_size = batch_size ,epochs = epochs, verbose = 1)
@@ -95,7 +97,13 @@ def lenet_model(x_train, y_train, x_test, y_test,nb_classes):
 
 if __name__ == "__main__":
     x_train, y_train, x_test, y_test,nb_classes = mnist_data()
-    lenet_model(x_train, y_train, x_test, y_test,nb_classes)
+    model = lenet_model(x_train, y_train, x_test, y_test,nb_classes)
+    print("Model size {} GB".format(get_model_memory_usage(32,model)))
+    batch_size = 32
+
+    model_memory_params(batch_size, model)
+    #train_model(model,x_train, y_train, x_test, y_test,batch_size)
+
 
     
 
