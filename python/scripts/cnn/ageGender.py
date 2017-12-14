@@ -27,11 +27,6 @@ np.random.seed(123)
 
 
 
-
-
-
-
-
 def age_gender_model():
     
 
@@ -41,7 +36,7 @@ def age_gender_model():
     
     # Conv Layer 1
     
-    x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
+    x = Conv2D(filters = 12, kernel_size = (7,7), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
@@ -52,7 +47,7 @@ def age_gender_model():
     
     # Conv Layer 2
     
-    x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
+    x = Conv2D(filters = 24, kernel_size = (5,5), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -63,8 +58,8 @@ def age_gender_model():
     x = BatchNormalization()(x)
 
     # Conv Layer 3
-    
-    x = Conv2D(filters = 384, kernel_size = (3,3), strides = (1,1), 
+    """
+    x = Conv2D(filters = 56, kernel_size = (3,3), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     
     x = Activation("relu")(x)
@@ -73,15 +68,15 @@ def age_gender_model():
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     
     x = BatchNormalization()(x)
-    
+    """
     
     x = Flatten()(x)
     
-    x = Dense(512, activation = "relu")(x)
+    x = Dense(100, activation = "relu")(x)
     
     x = Dropout(rate = 0.5)(x)
     
-    x = Dense(512, activation ="relu")(x)
+    x = Dense(50, activation ="relu")(x)
     
     x = Dropout(rate = 0.5)(x)
 
