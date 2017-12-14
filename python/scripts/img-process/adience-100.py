@@ -41,7 +41,10 @@ hdf5_file.create_dataset("train_images", train_shape, np.int8)
 hdf5_file.create_dataset("train_mean", train_shape[1:], np.float32)
 
 hdf5_file.create_dataset("train_labels", (total_images,2), np.int8)
+hdf5_file.create_dataset("train_single_label", (total_images,), np.int8)
+
 hdf5_file["train_labels"][...] = labels_df[['age_class', 'gender_class']]
+hdf5_file["train_single_label"][...] = labels_df['all_class']
 
 mean = np.zeros(train_shape[1:], np.float32)
 images_location_list = labels_df['image_loc'].tolist()
