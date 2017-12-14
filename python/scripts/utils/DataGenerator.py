@@ -25,9 +25,35 @@ def adience_datagenerator(filepath, batchsize):
 			yield (x_train, y_train_onecoding)
 		f.close()
 
+def adience_datagenerator_16classes(filepath, batchsize):
+	""" Extract the 16 dimensional Y variable"""
+	dimensions = (batchsize, 100, 100,3)
+	while 1:
+
+		f = h5py.File(filepath, "r")
+		filesize = len(f['train_labels'])
+
+		n_entries = 0
+		while n_entries < (filesize - batchsize):
+			x_train= f['train_images'][n_entries : n_entries + batchsize]
+			x_train= np.reshape(x_train, dimensions).astype('float32')
+
+			y_train = f['train_single_label'][n_entries:n_entries+batchsize]
+			y_train_onecoding = np_utils.to_categorical(y_train, 16)
+
+			n_entries += batchsize
+			yield (x_train, y_train_onecoding)
+		f.close()
 
 if __name__ == '__main__':
-	hdf5_path = '../data/Adience/hdf5/adience.h5'
+	hdf5_path = '../data/Adience/hdf5/adience-100.h5'
 	vals = adience_datagenerator(hdf5_path, 4)
 	x_train, y_train = next(vals)
 	print(x_train.shape)
+
+	vals1 = adience_datagenerator_16classes(hdf5_path, 4)
+	x_train,y_train = next(vals1)
+	print(x_train.shape)
+	print(y_train.shape)
+	print(y_train)
+
