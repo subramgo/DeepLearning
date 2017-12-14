@@ -4,6 +4,7 @@
 
 .ipynb_checkpoints
 data/
+models/
 tensorflow/
 *.pydevproject
 .project

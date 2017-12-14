@@ -18,36 +18,13 @@ import keras.backend as K
 import sys,os
 sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
+from utils.DataGenerator import adience_datagenerator
 
 K.set_image_data_format('channels_last')
 
 np.random.seed(123)
 
 
-hdf5_path = '../data/Adience/hdf5/adience.h5'
-hdf5_file = h5py.File(hdf5_path, mode = 'r')
-
-
-data_size = hdf5_file['train_images'].shape[0]
-batch_size = 256
-nb_class = 10
-
-print("Total Training Images {}".format(data_size))
-
-x_train = hdf5_file['train_images']
-y_train = hdf5_file['train_labels']
-
-print(x_train.shape)
-
-y_train_1 = y_train[:,0]
-y_train_2 = y_train[:,1]
-
-
-
-y_train_1_onecoding = np_utils.to_categorical(y_train_1, 8)
-y_train_2_onecoding = np_utils.to_categorical(y_train_2, 2)
-
-y_train_onecoding = np.concatenate((y_train_2_onecoding, y_train_1_onecoding), axis = 1)
 
 
 
@@ -131,19 +108,22 @@ callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, v
 
 model = age_gender_model()
 batch_size = 4
-epochs = 100
+epochs = 10
+hdf5_path = '../data/Adience/hdf5/adience.h5'
+
 
 model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
-
-hist = model.fit(x_train, y_train_onecoding, batch_size = batch_size,shuffle="batch",
-                     epochs=epochs, callbacks = callbacks, verbose = 1)
+hist = model.fit_generator(adience_datagenerator(hdf5_path, batch_size), steps_per_epoch = 1000,  epochs = epochs)
 
 model_path = '../models/age_gender_model.h5'
 model.save(model_path)
 del model 
 
-eval = Evaluate(model_path, x_train, y_train_onecoding, batch_size = 1)
+
+evals = adience_datagenerator(hdf5_path, batch_size)
+x_test, y_test = next(evals)
+eval = Evaluate(model_path, x_test, y_test, batch_size = 1)
 eval.process()
 
 
