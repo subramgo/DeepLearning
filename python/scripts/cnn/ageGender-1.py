@@ -17,7 +17,7 @@ import keras.backend as K
 import sys,os
 sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
-from utils.DataGenerator import adience_datagenerator
+from utils.DataGenerator import adience_datagenerator,adience_datagenerator_16classes
 from utils.memoryreqs import get_model_memory_usage,model_memory_params
 
 K.set_image_data_format('channels_last')
