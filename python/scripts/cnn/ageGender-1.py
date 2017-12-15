@@ -82,7 +82,7 @@ def age_gender_model():
     x = Dropout(rate = 0.5)(x)
 
     
-    predictions = Dense(10, activation="softmax")(x)
+    predictions = Dense(16, activation="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
 
@@ -90,10 +90,10 @@ def age_gender_model():
     return model
 
 
-def build_model(model):
+def build_model(model, batch_size):
 
     # Optimizer
-    sgd = optimizers.SGD(lr=0.005, momentum=0, decay=1e-6, nesterov=False)
+    sgd = optimizers.SGD(lr=0.001, momentum=0.95, decay=1e-6, nesterov=False)
 
 
     # Callbacks
@@ -102,17 +102,16 @@ def build_model(model):
 
 
 
-    batch_size = 16
 
-    epochs = 10
+    epochs = 500
     hdf5_path = '../data/Adience/hdf5/adience-100.h5'
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
 
-    hist = model.fit_generator(adience_datagenerator(hdf5_path, batch_size), steps_per_epoch = 1000,  epochs = epochs)
+    hist = model.fit_generator(adience_datagenerator_16classes(hdf5_path, batch_size), steps_per_epoch = 1000,  epochs = epochs)
 
-    model_path = '../models/age_gender_model.h5'
+    model_path = '../models/age_gender_model-0.2.h5'
     model.save(model_path)
     del model 
 
@@ -132,7 +131,7 @@ if __name__ == '__main__':
     model = age_gender_model()
     batch_size = 32
     model_memory_params(batch_size, model)
-    build_model(model)
+    build_model(model, batch_size)
 
 
 
