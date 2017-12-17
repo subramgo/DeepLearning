@@ -103,7 +103,7 @@ def build_model(model, batch_size):
 
 
 
-    epochs = 500
+    epochs = 2500
     hdf5_path = '../data/Adience/hdf5/adience-100.h5'
 
 
@@ -111,12 +111,12 @@ def build_model(model, batch_size):
 
     hist = model.fit_generator(adience_datagenerator_16classes(hdf5_path, batch_size), steps_per_epoch = 1000,  epochs = epochs)
 
-    model_path = '../models/age_gender_model-0.2.h5'
+    model_path = '../models/age_gender_model-0.3.h5'
     model.save(model_path)
     del model 
 
 
-    evals = adience_datagenerator(hdf5_path, batch_size)
+    evals = adience_datagenerator_16classes(hdf5_path, batch_size)
     x_test, y_test = next(evals)
     eval = Evaluate(model_path, x_test, y_test, batch_size = 1)
     eval.process()
