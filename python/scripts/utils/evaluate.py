@@ -60,7 +60,7 @@ class Evaluate():
 
 		self.scores = self.model.evaluate(self.x_test, self.y_test, batch_size = self.batch_size)
 	
-	def __predict(self, x.test, batch_size):
+	def __predict(self, x_test, batch_size):
 		self.x_test  = x_test
 		self.y_test  = y_test 
 		self.batch_size = batch_size
