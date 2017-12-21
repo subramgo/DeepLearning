@@ -129,7 +129,7 @@ def build_model(model, batch_size):
 
 if __name__ == '__main__':
     model = age_gender_model()
-    batch_size = 32
+    batch_size = 8
     model_memory_params(batch_size, model)
     build_model(model, batch_size)
 
