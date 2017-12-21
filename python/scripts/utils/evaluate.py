@@ -70,14 +70,14 @@ class Evaluate():
 	def __cleanup(self):
 		del self.model
 
-	def process(self, eval = True, predict = True):
+	def process(self, x_test, y_test, batch_size, eval = True, predict = True):
 		if eval:
-			self.__evaluate()
+			self.__evaluate(x_test, y_test,batch_size)
 			print("Score {}".format(self.scores[1]))
 			return None
 
 		if predict:
-			self.__predict()
+			self.__predict(x_test, batch_size)
 			print(self.predictions)
 			idx = np.argmax(self.predictions)
 			return gender_filter[idx]
