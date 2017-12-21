@@ -18,19 +18,25 @@ class Evaluate():
 
 	def __evaluate(self):
 		self.scores = self.model.evaluate(self.x_test, self.y_test, batch_size = self.batch_size)
+	
+	def __predict(self):
 		self.predictions = self.model.predict(self.x_test, batch_size=self.batch_size)
 
 	def __cleanup(self):
 		del self.model
 
-	def process(self):
+	def process(self, eval = True, predict = True):
 		self.__load_model()
-		self.__evaluate()
+		if eval:
+			self.__evaluate()
+			print("Score {}".format(self.scores[1]))
 
-		print("Score {}".format(self.scores[1]))
-		print(self.predictions)
+		if predict:
+			self.__predict()
+			print(self.predictions)
 
 		self.__cleanup()
+
 
 
 
