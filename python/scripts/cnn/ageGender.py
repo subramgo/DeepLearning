@@ -17,9 +17,9 @@ from keras.callbacks import History, EarlyStopping
 import keras.backend as K
 import sys,os
 sys.path.append(os.getcwd())
-from utils.evaluate import Evaluate
-from utils.DataGenerator import adience_datagenerator
-from utils.memoryreqs import get_model_memory_usage,model_memory_params
+from DLUtils.Evaluation import DemographicClassifier
+from DLUtils.DataGenerator import adience_datagenerator
+from DLUtils.memoryreqs import get_model_memory_usage,model_memory_params
 
 K.set_image_data_format('channels_last')
 
@@ -116,8 +116,8 @@ def build_model(model):
 
     evals = adience_datagenerator(hdf5_path, batch_size)
     x_test, y_test = next(evals)
-    eval = Evaluate(model_path, x_test, y_test, batch_size = 1)
-    eval.process()
+    eval = DemographicClassifier(model_path)
+    eval.process(x_test, y_test, batch_size = 1)
 
 
 ## TODO: evaluate insample test (`hist` object) 
