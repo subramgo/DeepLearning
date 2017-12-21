@@ -6,19 +6,44 @@ import sys,os
 sys.path.append(os.getcwd())
 from utils.evaluate import Evaluate
 import cv2
+import glob
 
-
-
-model_path = '../models/age_gender_model-0.3.h5'
 image_path = sys.argv[1]
 
+process_multiple = False 
 
-image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-resized_image = cv2.resize(image, (100, 100)) 
-resized_image = resized_image.reshape(1,100,100,3)
+if os.path.isdir(image_path):
+	process_multiple = True 
+elif os.path.isfile(image_path):
+	process_multiple = False
+else:
+	print("Invalid path")
+	exit()
 
-eval = Evaluate(model_path, resized_image, None, batch_size = 1)
-eval.process(eval = False, predict = True)
+model_path = '../models/age_gender_model-0.3.h5'
+eval = Evaluate(model_path)
+
+f = open('results.txt', 'w')
+
+if process_multiple:
+	file_list = glob.glob(image_path)
+	for file in file_list:
+		image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+		resized_image = cv2.resize(image, (100, 100)) 
+		resized_image = resized_image.reshape(1,100,100,3)
+		gender = eval.process(resized_image, eval = False, predict = True)
+		f.write(str(file) + ',' + str(gender))
+
+	f.close()
+
+else:
+	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+	resized_image = cv2.resize(image, (100, 100)) 
+	resized_image = resized_image.reshape(1,100,100,3)
+
+	gender = eval.process(resized_image, eval = False, predict = True)
+	print(str(file) + ',' + str(gender))
+
 
 
 

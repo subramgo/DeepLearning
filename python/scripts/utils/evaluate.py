@@ -3,6 +3,26 @@ from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
 
+
+gender_filter = {
+	0:'Female' 
+	,1:'Male' 
+          ,2:'Female' 
+          ,3:'Male'
+           , 4:'Female'
+           , 5:'Male'
+           , 6:'Female'
+           ,7:'Male'
+           ,8:'Female'
+           ,9:'Male'
+           ,10:'Female'
+           , 11:'Male'
+           ,12:'Female'
+           ,13:'Male'
+           , 14:'Female'
+           ,15:'Male'
+           }
+
 age_gender_filter = {
 	0:'f-(0, 2)' 
 	,1:'m-(0, 2)' 
@@ -23,11 +43,8 @@ age_gender_filter = {
            }
 
 class Evaluate():
-	def __init__(self, model_path, x_test, y_test, batch_size):
+	def __init__(self, model_path):
 		self.model_path = model_path
-		self.x_test  = x_test
-		self.y_test  = y_test 
-		self.batch_size = batch_size
 		self.model = None
 		self.scores = None
 		self.predictions = None
@@ -36,26 +53,34 @@ class Evaluate():
 	def __load_model(self):
 		self.model = load_model(self.model_path)
 
-	def __evaluate(self):
+	def __evaluate(self, x_test, y_test, batch_size):
+		self.x_test  = x_test
+		self.y_test  = y_test 
+		self.batch_size = batch_size
+
 		self.scores = self.model.evaluate(self.x_test, self.y_test, batch_size = self.batch_size)
 	
-	def __predict(self):
+	def __predict(self, x.test, batch_size):
+		self.x_test  = x_test
+		self.y_test  = y_test 
+		self.batch_size = batch_size
+
 		self.predictions = self.model.predict(self.x_test, batch_size=self.batch_size)
 
 	def __cleanup(self):
 		del self.model
 
 	def process(self, eval = True, predict = True):
-		self.__load_model()
 		if eval:
 			self.__evaluate()
 			print("Score {}".format(self.scores[1]))
+			return None
 
 		if predict:
 			self.__predict()
 			print(self.predictions)
 			idx = np.argmax(self.predictions)
-			print(age_gender_filter[idx])
+			return gender_filter[idx]
 
 		self.__cleanup()
 
