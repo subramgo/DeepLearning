@@ -1,6 +1,26 @@
+import numpy as np
 from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
+
+age_gender_filter = {
+	0:'f-(0, 2)' 
+	,1:'m-(0, 2)' 
+          ,2:'f-(4, 6)' 
+          ,3:'m-(4, 6)'
+           , 4:'f-(8, 12)'
+           , 5:'m-(8, 12)'
+           , 6:'f-(15, 20)'
+           ,7:'m-(15, 20)'
+           ,8:'f-(25, 32)'
+           ,9:'m-(25, 32)'
+           ,10:'f-(38, 43)'
+           , 11:'m-(38, 43)'
+           ,12:'f-(48, 53)'
+           ,13:'m-(48, 53)'
+           , 14:'f-(60, 100)'
+           ,15:'m-(60, 100)'
+           }
 
 class Evaluate():
 	def __init__(self, model_path, x_test, y_test, batch_size):
@@ -34,6 +54,8 @@ class Evaluate():
 		if predict:
 			self.__predict()
 			print(self.predictions)
+			idx = np.argmax(self.predictions)
+			print(age_gender_filter[idx])
 
 		self.__cleanup()
 
