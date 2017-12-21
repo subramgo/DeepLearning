@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image Upload</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<h1>Image Upload Demo</h1>
+
+This is a simple Python Flask web app.<p>
+
+You can upload files by using the multi-select file upload box (supported in
+most browsers and Internet Explorer 10+), or by dragging and dropping files into
+the dashed box below (again, in most browsers).<p>
+
+<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+    <strong>Files:</strong><br>
+    Select files OR drag them into the box below.
+    <input id="file-picker" type="file" name="file" accept="image/*" multiple><p>
+
+    <div id="dropbox">
+        Drag and Drop Files Here
+    </div><p>
+
+    <fieldset id="progress" style="display: none">
+        <legend>Files Progress</legend>
+
+        <div class="progress-trough">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
+    </fieldset><p>
+
+    <input type="submit" value="Upload!" id="upload-button">
+</form>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
+
+</body>
+</html>
