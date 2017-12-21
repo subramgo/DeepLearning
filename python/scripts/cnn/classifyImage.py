@@ -26,8 +26,10 @@ eval = Evaluate(model_path)
 f = open('results.txt', 'w')
 
 if process_multiple:
-	file_list = glob.glob(image_path)
+	file_list = glob.glob(image_path + '*.jpg')
+	print(file_list)
 	for file in file_list:
+		print(file)
 		image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 		resized_image = cv2.resize(image, (100, 100)) 
 		resized_image = resized_image.reshape(1,100,100,3)

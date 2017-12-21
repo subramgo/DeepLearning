@@ -62,7 +62,6 @@ class Evaluate():
 	
 	def __predict(self, x_test, batch_size):
 		self.x_test  = x_test
-		self.y_test  = y_test 
 		self.batch_size = batch_size
 
 		self.predictions = self.model.predict(self.x_test, batch_size=self.batch_size)
