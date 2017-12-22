@@ -1,11 +1,19 @@
 import cv2
 import base64
+import json
 import numpy as np
 
 # encode all as 
 unit_dtype = np.int64
 
+def file2json(filepath):
+    """ Give a file path, get a json encoded blob. Decode with json2array """
+    _b64,shape,_dtype = file2base64(filepath)
+    data = {'image':_b64,'shape':shape,'dtype':_dtype.name}
+    return json.dumps(data)
+
 def file2base64(filepath):
+    """ Give a file path, get base64, shape, dtype-string. Decode with base642array """
     return array2base64(file2array(filepath))
 
 def file2array(filepath):
@@ -28,6 +36,15 @@ def array2base64(np_array):
 def base642array(img64,shape,dtype):
     """convert base-64 encoded image to a numpy array"""
     return np.frombuffer(base64.decodestring(img64),dtype=dtype).reshape(shape)
+
+def json2array(json_string):
+    image_dict = json.loads(json_string)
+    img64 = image_dict['image']
+    shape = image_dict['shape']
+    dtype = np.dtype(image_dict['dtype'])
+    
+    image_arr = base642array(img64,shape,dtype)
+    return image_arr
 
 
 ############################################################
