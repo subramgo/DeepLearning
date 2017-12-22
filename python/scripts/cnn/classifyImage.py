@@ -2,6 +2,7 @@ import numpy as np
 from keras.models import Model
 import h5py
 import sys
+import os
 #import sys,os
 #sys.path.append(os.getcwd())
 from DLUtils.Evaluation import DemographicClassifier
@@ -21,7 +22,7 @@ else:
 	exit()
 
 model_path = '../models/age_gender_model-0.3.h5'
-eval = Evaluate(model_path)
+eval = DemographicClassifier(model_path)
 
 f = open('results.txt', 'w')
 
