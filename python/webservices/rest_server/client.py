@@ -5,7 +5,7 @@ from DLUtils import convert
 model_id = "6i"
 image_id = "35"
 url_path = "/demographics/{}/image/{}".format(model_id,image_id)
-full_url = "http://localhost:7171"+url_path
+full_url = "http://10.38.4.84:7171"+url_path
 headers={'Content-Type': 'application/octet-stream'}
 
 def get_prediction(model_id,image_id,json_payload):
@@ -47,5 +47,6 @@ if __name__=='__main__':
     if len(sys.argv) > 1:
         res = post_image(sys.argv[1])
 	print(res)
+	print(res['gender'])
     else:
         post_image()
