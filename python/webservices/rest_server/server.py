@@ -42,12 +42,14 @@ class ModelLoader(MethodView):
     def post(self):
         """Accept a post request to serve predictions."""
         content = request.get_json()
-        img64 = content['X_input']
+        img64 = content['image']
         shape = content['shape']
         dtype = content['dtype']
         image_arr = convert.base642array(img64,shape,dtype)
-        
-        pred_val = self.predictor.predict(X_input=X_input)
+        resized_image = cv2.resize(image_arr, (100, 100)) 
+        resized_image = resized_image.reshape(1,100,100,3)
+       
+        pred_val = self.predictor.predict(X_input=resized_image)
         pred_val = pred_val.tolist()
         return jsonify({'pred_val': pred_val})
     
