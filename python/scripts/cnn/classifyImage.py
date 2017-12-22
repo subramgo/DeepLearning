@@ -2,9 +2,9 @@ import numpy as np
 from keras.models import Model
 import h5py
 import sys
-import sys,os
-sys.path.append(os.getcwd())
-from utils.evaluate import Evaluate
+#import sys,os
+#sys.path.append(os.getcwd())
+from DLUtils.Evaluation import DemographicClassifier
 import cv2
 import glob
 
@@ -34,6 +34,8 @@ if process_multiple:
 		resized_image = resized_image.reshape(1,100,100,3)
 		gender = eval.process(resized_image, None, 1, eval = False, predict = True)
 		f.write(str(file) + ',' + str(gender) + '\n')
+		gender = eval.process(resized_image)
+		f.write(str(file) + ',' + str(gender) + '/n')
 
 	f.close()
 
@@ -42,7 +44,7 @@ else:
 	resized_image = cv2.resize(image, (100, 100)) 
 	resized_image = resized_image.reshape(1,100,100,3)
 
-	gender = eval.process(resized_image, None, 1,eval = False, predict = True)
+	gender = eval.process(resized_image)
 	print(str(file) + ',' + str(gender))
 
 
