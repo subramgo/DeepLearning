@@ -3,8 +3,6 @@ from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
 
-"""this package should be called 'evaluate' (with lower case) to follow naming conventions"""
-
 class DemographicClassifier():
     """Given a trained face classification model, apply it to some data."""
     gender_filter = {

@@ -1,20 +1,20 @@
 import requests
+import json
 from DLUtils import convert
 
 model_id = "6i"
 image_id = "35"
 
-def get_prediction(model_id,image_id,img64,shape,dtype):
+def get_prediction(model_id,image_id,json_payload):
     """Get predictions from a rest backend for your input."""
     print("Requesting prediction for image\n")
-    _path = "/demographics/{}/image/{}".format(model_id,image_id)
+    url_path = "/demographics/{}/image/{}".format(model_id,image_id)
 
 
-    res = requests.post(url="http://localhost:7171"+_path,
-                        data=img64,
+    res = requests.post(url="http://localhost:7171"+url_path,
+                        data=json_payload,
                         headers={'Content-Type': 'application/octet-stream'})
     
-
     print(res.status_code, res.reason)
     resp = res.json()
     return resp
@@ -28,7 +28,14 @@ def _adience():
     x_test, y_test = vals.next()
 
 
-def _test():
-    img64,shape,dtype = convert.file2base64('test.jpg')
-    get_prediction(model_id,image_id,img64,shape,dtype)
+def send_image(image_path = './test.jpg'):
+    json_payload = convert.file2json(image_path)
+    get_prediction(model_id,image_id,json_payload)
 
+
+if __name__=='__main__':
+    import sys
+    if len(sys.argv) > 1:
+        send_image(sys.argv[1])
+    else:
+        send_image()

@@ -3,9 +3,6 @@ import base64
 import json
 import numpy as np
 
-# encode all as 
-unit_dtype = np.int64
-
 def file2json(filepath):
     """ Give a file path, get a json encoded blob. Decode with json2array """
     _b64,shape,_dtype = file2base64(filepath)
