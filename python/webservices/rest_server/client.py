@@ -4,6 +4,9 @@ from DLUtils import convert
 
 model_id = "6i"
 image_id = "35"
+url_path = "/demographics/{}/image/{}".format(model_id,image_id)
+full_url = "http://localhost:7171"+url_path
+headers={'Content-Type': 'application/octet-stream'}
 
 def get_prediction(model_id,image_id,json_payload):
     """Get predictions from a rest backend for your input."""
@@ -33,9 +36,16 @@ def send_image(image_path = './test.jpg'):
     get_prediction(model_id,image_id,json_payload)
 
 
+def post_image(image_path):
+    img = open(image_path, 'rb').read()
+    response = requests.post(url=full_url, data = img, json = None, headers = headers)
+    return response.json() 
+
+
 if __name__=='__main__':
     import sys
     if len(sys.argv) > 1:
-        send_image(sys.argv[1])
+        res = post_image(sys.argv[1])
+	print(res)
     else:
-        send_image()
+        post_image()

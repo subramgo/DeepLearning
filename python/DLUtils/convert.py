@@ -7,7 +7,8 @@ def file2json(filepath):
     """ Give a file path, get a json encoded blob. Decode with json2array """
     _b64,shape,_dtype = file2base64(filepath)
     data = {'image':_b64,'shape':shape,'dtype':_dtype.name}
-    return json.dumps(data)
+    #return json.dumps(data)
+    return data
 
 def file2base64(filepath):
     """ Give a file path, get base64, shape, dtype-string. Decode with base642array """
