@@ -16,70 +16,64 @@ from keras import optimizers
 from keras.callbacks import History, EarlyStopping
 import keras.backend as K
 import sys,os
-sys.path.append(os.getcwd())
 from DLUtils.Evaluation import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator
 from DLUtils.memoryreqs import get_model_memory_usage,model_memory_params
+from keras.preprocessing.image import ImageDataGenerator
+import ConfigParser
 
 K.set_image_data_format('channels_last')
-
 np.random.seed(123)
 
+def get_configs():
+    Config = ConfigParser('../settings/models.ini')
+    section = 'agegender'
+    dict1 = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            dict1[option] = Config.get(section, option)
+            if dict1[option] == -1:
+                DebugPrint("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1
 
-
-def age_gender_model():
-    
-
-    input_shape = (256, 256, 3)
-    
+def age_gender_model(input_shape, nb_classes):
+    """
+    """
     x_input = Input(input_shape)
-    
     # Conv Layer 1
-    
     x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
-    
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
-    
     x = BatchNormalization()(x)
     
     # Conv Layer 2
-    
     x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
-    
     x = Activation("relu")(x)
-
-
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
-    
     x = BatchNormalization()(x)
 
     # Conv Layer 3
     x = Conv2D(filters = 512, kernel_size = (3,3), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
-    
     x = Activation("relu")(x)
-
-
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
-    
     x = BatchNormalization()(x)
         
     x = Flatten()(x)
     
     x = Dense(512, activation = "relu")(x)
-    
     x = Dropout(rate = 0.5)(x)
-    
     x = Dense(512, activation ="relu")(x)
-    
     x = Dropout(rate = 0.5)(x)
 
-    
-    predictions = Dense(10, activation="softmax")(x)
+    predictions = Dense(nb_classes, activation="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
 
@@ -87,49 +81,51 @@ def age_gender_model():
     return model
 
 
-def build_model(model):
+def build_model(model, config_dict):
+
+    hdf5_path = config_dict['hdf5_path']
+
 
     # Optimizer
-    sgd = optimizers.SGD(lr=0.005, momentum=0, decay=1e-6, nesterov=False)
-
-
+    sgd = optimizers.SGD(lr= config_dict['learning_rate'] , momentum = config_dict['momentum']
+        , decay=1e-6, nesterov=False)
+   
     # Callbacks
-    early_stop_th = 10**-7
-    callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, verbose=0, mode='auto')]
+    callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto')]
 
+    train_datagen = ImageDataGenerator(
+            rescale=1./255,
+            shear_range=0.2,
+            zoom_range=0.2,
+            horizontal_flip=True)
 
+    test_datagen = ImageDataGenerator(rescale=1./255)
 
-    batch_size = 4
+    train_generator = train_datagen.flow_from_directory(
+            config_dict['train_path'],
+            target_size=config_dict['input_shape'],
+            batch_size=config_dict['batch_size'],
+            class_mode='binary')
 
-    epochs = 10
-    hdf5_path = '../data/Adience/hdf5/adience.h5'
+    validation_generator = test_datagen.flow_from_directory(
+            config_dict['eval_path'],
+            target_size=config_dict['input_shape'],
+            batch_size=config_dict['batch_size'],
+            class_mode='binary')
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
+    hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],
+        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=800)
 
-    hist = model.fit_generator(adience_datagenerator(hdf5_path, batch_size), steps_per_epoch = 1000,  epochs = epochs)
-
-    model_path = '../models/age_gender_model.h5'
-    model.save(model_path)
+    model.save(config_dict['model_path'])
     del model 
 
-
-    evals = adience_datagenerator(hdf5_path, batch_size)
-    x_test, y_test = next(evals)
-    eval = DemographicClassifier(model_path)
-    eval.process(x_test, y_test, batch_size = 1)
-
-
-## TODO: evaluate insample test (`hist` object) 
-## TODO: serialize model for domain transfer testing
-
-
-
 if __name__ == '__main__':
-    model = age_gender_model()
-    batch_size = 32
-    model_memory_params(batch_size, model)
-    #build_model(model)
+    config_dict = get_configs()
+    model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])
+    model_memory_params(config_dict['batch_size'], model)
+    build_model(model, config_dict)
 
 
 
