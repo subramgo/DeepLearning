@@ -3,7 +3,8 @@ import keras
 from keras import optimizers
 import numpy as np
 
-from DLUtils import Evaluation
+from DLUtils import evaluate
+from DLUtils import convert
 
 from flask import Flask, request, jsonify
 from flask.views import MethodView
@@ -41,11 +42,11 @@ class ModelLoader(MethodView):
     def post(self):
         """Accept a post request to serve predictions."""
         content = request.get_json()
-        X_input = content['X_input']
-        dimensions = content['dimensions']
-        X_input = np.reshape(np.array(json.loads(X_input)),dimensions)
-        if not isinstance(X_input, np.ndarray):
-            X_in = np.reshape(np.array(X_input), dimensions)
+        img64 = content['X_input']
+        shape = content['shape']
+        dtype = content['dtype']
+        image_arr = convert.base642array(img64,shape,dtype)
+        
         pred_val = self.predictor.predict(X_input=X_input)
         pred_val = pred_val.tolist()
         return jsonify({'pred_val': pred_val})
