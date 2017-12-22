@@ -33,7 +33,7 @@ if process_multiple:
 		resized_image = cv2.resize(image, (100, 100)) 
 		resized_image = resized_image.reshape(1,100,100,3)
 		gender = eval.process(resized_image, None, 1, eval = False, predict = True)
-		f.write(str(file) + ',' + str(gender) + '/n')
+		f.write(str(file) + ',' + str(gender) + '\n')
 
 	f.close()
 
