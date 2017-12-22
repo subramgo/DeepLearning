@@ -16,7 +16,7 @@ from keras import optimizers
 from keras.callbacks import History, EarlyStopping
 import keras.backend as K
 import sys,os
-from DLUtils.Evaluation import DemographicClassifier
+from DLUtils.evaluate import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator
 from DLUtils.memoryreqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator

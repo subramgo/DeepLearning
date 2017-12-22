@@ -6,7 +6,7 @@ This `DLUtils` package contains utilities we'll want to use in:
   * webservices
   * iPython notebooks
 
-Install in your virtualenv thusly:
+From the directory containing `setup.py`, install in your virtualenv thusly:
 
     pip install --editable .
 

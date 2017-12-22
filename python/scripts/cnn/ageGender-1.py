@@ -16,9 +16,9 @@ from keras.callbacks import History, EarlyStopping
 import keras.backend as K
 import sys,os
 sys.path.append(os.getcwd())
-from DLUtilsEvaluation import DemographicClassifier
-from DLUtilsDataGenerator import adience_datagenerator,adience_datagenerator_16classes
-from DLUtilsmemoryreqs import get_model_memory_usage,model_memory_params
+from DLUtils.evaluate import DemographicClassifier
+from DLUtils.DataGenerator import adience_datagenerator,adience_datagenerator_16classes
+from DLUtils.memoryreqs import get_model_memory_usage,model_memory_params
 
 K.set_image_data_format('channels_last')
 

@@ -20,16 +20,26 @@ def array2file(np_array,filepath):
 
 def array2base64(np_array):
     """convert a numpy array to a base-64 encoded image"""
+    # save array shape, flatten array, convert to base64
     shape = np_array.shape
-    return base64.encodestring(np_array),shape
+    dtype = np_array.dtype
+    return base64.b64encode(np_array.flatten()),shape,dtype
 
-def base642array(img64,shape):
+def base642array(img64,shape,dtype):
     """convert base-64 encoded image to a numpy array"""
-    return np.frombuffer(base64.decodestring(img64))
+    return np.frombuffer(base64.decodestring(img64),dtype=dtype).reshape(shape)
 
-np_array = file2array('test.jpg')
-enc,shape = array2base64(np_array)
-dec = base642array(enc,shape)
 
-# Problem:
-# enc != dec 
+############################################################
+############################################################
+
+
+def _demo():
+  arimg = file2array('test.jpg')
+  enc,shape,dtype = array2base64(arimg)
+  dec = base642array(enc,shape,dtype)
+  if (arimg == dec).all():
+    print("numpy array <-> base64 conversion parity successful")
+  else:
+    print("It's broken")
+

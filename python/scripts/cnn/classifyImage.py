@@ -5,7 +5,7 @@ import sys
 import os
 #import sys,os
 #sys.path.append(os.getcwd())
-from DLUtils.Evaluation import DemographicClassifier
+from DLUtils.evaluate import DemographicClassifier
 import cv2
 import glob
 
