@@ -57,7 +57,7 @@ class ModelLoader(MethodView):
         pass
         #TODO similar to above POST
 
-def run(host='0.0.0.0', port=7171):
+def run(host='', port=9001):
     app = Flask(__name__)
     app.add_url_rule('/demographics/<model_id>/image/<image_id>', view_func=ModelLoader.as_view('predict'))
     
