@@ -8,6 +8,8 @@ model_path = '../../models/age_gender_model-0.3.h5'
 predictor = evaluate.DemographicClassifier(model_path=model_path)
 
 app = Flask(__name__)
+app.config['DEBUG'] = False
+app.debug = False
 
 @app.route('/gender', methods =['POST'])
 def gender():
