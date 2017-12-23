@@ -14,7 +14,7 @@ def get_prediction(model_id,image_id,json_payload):
     url_path = "/demographics/{}/image/{}".format(model_id,image_id)
 
 
-    res = requests.post(url="http://localhost:7171"+url_path,
+    res = requests.post(url="http://localhost:8081"+url_path,
                         data=json_payload,
                         headers={'Content-Type': 'application/octet-stream'})
     
@@ -46,7 +46,7 @@ if __name__=='__main__':
     import sys
     if len(sys.argv) > 1:
         res = post_image(sys.argv[1])
-	print(res)
-	print(res['gender'])
+        print(res)
+        print(res['gender'])
     else:
         post_image()
