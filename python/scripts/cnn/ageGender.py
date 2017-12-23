@@ -18,26 +18,29 @@ import keras.backend as K
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator
-from DLUtils.memoryreqs import get_model_memory_usage,model_memory_params
+from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator
-import ConfigParser
+import configparser
+from ast import literal_eval
 
 K.set_image_data_format('channels_last')
 np.random.seed(123)
 
 def get_configs():
-    Config = ConfigParser('../settings/models.ini')
+    Config = configparser.ConfigParser()
+    Config.read('../settings/models.ini')
     section = 'agegender'
     dict1 = {}
     options = Config.options(section)
     for option in options:
         try:
-            dict1[option] = Config.get(section, option)
+            dict1[option] = literal_eval(Config.get(section, option))
             if dict1[option] == -1:
                 DebugPrint("skip: %s" % option)
         except:
             print("exception on %s!" % option)
             dict1[option] = None
+    print (dict1)
     return dict1
 
 def age_gender_model(input_shape, nb_classes):
@@ -116,7 +119,7 @@ def build_model(model, config_dict):
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],
-        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=800)
+        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
 
     model.save(config_dict['model_path'])
     del model 
@@ -125,7 +128,7 @@ if __name__ == '__main__':
     config_dict = get_configs()
     model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])
     model_memory_params(config_dict['batch_size'], model)
-    build_model(model, config_dict)
+    #build_model(model, config_dict)
 
 
 
