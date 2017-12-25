@@ -2,6 +2,7 @@ import numpy as np
 from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
+import cv2
 
 class DemographicClassifier():
     """Given a trained face classification model, apply it to some data."""
@@ -73,14 +74,25 @@ class DemographicClassifier():
         self.__cleanup()
         self.model_path = model_path
 
+    def input_preprocessing(self,image_arr):
+        """ Preprocessing to match the training conditions for this model. 
+        Apply resize, reshape, other scaling/whitening effects.
+        x_test can be any image size greater than 100x100 and it will be resized
+        """
+        resized = cv2.resize(image_arr, (100, 100)) 
+        resized = resized.reshape(1,100,100,3)
+        return resized
+
     def process(self, x_test, y_test=None, batch_size=1):
+        preprocessed = self.input_preprocessing(x_test)
+
         if y_test is not None:
-            self.__evaluate(x_test, y_test,batch_size)
+            self.__evaluate(preprocessed, y_test,batch_size)
             print("Score {}".format(self.scores[1]))
             return None
 
         else:
-            self.__predict(x_test, batch_size)
+            self.__predict(resized, batch_size)
             print(self.predictions)
             idx = np.argmax(self.predictions)
             return self.gender_filter[idx]
