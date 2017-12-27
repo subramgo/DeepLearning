@@ -17,28 +17,15 @@ import sys,os
 from DLUtils.evaluate import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator,adience_datagenerator_16classes
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
-import configparser
+from DLUtils.configs import get_configs
+from keras.preprocessing.image import ImageDataGenerator
+
 K.set_image_data_format('channels_last')
 
 
 np.random.seed(123)
 
-def get_configs():
-    Config = configparser.ConfigParser()
-    Config.read('../settings/models.ini')
-    section = 'faces12net'
-    dict1 = {}
-    options = Config.options(section)
-    for option in options:
-        try:
-            dict1[option] = literal_eval(Config.get(section, option))
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    print (dict1)
-    return dict1
+
 
 
 
@@ -73,7 +60,6 @@ def net12_model():
 
 def build_model(model, config_dict):
 
-    hdf5_path = config_dict['hdf5_path']
 
 
     # Optimizer
@@ -81,7 +67,7 @@ def build_model(model, config_dict):
         , decay=1e-6, nesterov=False)
    
     # Callbacks
-    callbacks = [EarlyStopping(monitor='acc', min_delta=early_stop_th, patience=5, verbose=0, mode='auto'), 
+    callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
     ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0), 
     CSVLogger("log.csv", separator=',', append=False),
     ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
@@ -96,15 +82,15 @@ def build_model(model, config_dict):
 
     train_generator = train_datagen.flow_from_directory(
             config_dict['train_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
-            class_mode='binary')
+            class_mode='categorical')
 
     validation_generator = test_datagen.flow_from_directory(
             config_dict['eval_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
-            class_mode='binary')
+            class_mode='categorical')
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
@@ -115,7 +101,7 @@ def build_model(model, config_dict):
     del model 
 
 if __name__ == '__main__':
-    config_dict = get_configs()
+    config_dict = get_configs('faces12net')
     model = net12_model()
     model_memory_params(config_dict['batch_size'], model)
-    #build_model(model, config_dict)
+    build_model(model, config_dict)
