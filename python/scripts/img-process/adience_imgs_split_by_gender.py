@@ -7,8 +7,8 @@ from shutil import copy2
 
 image_path  = '../data/Adience/faces/'
 
-male_dest   = '../data/Adience/gender/male/'
-female_dest ='../data/Adience/gender/female/'
+male_dest   = '../data/Adience/gender/train/male/'
+female_dest ='../data/Adience/gender/train/female/'
 # Labels folder
 fnl_labels_path = '../data/Adience/'
 labels_df = pd.read_csv(fnl_labels_path + 'labels.csv')

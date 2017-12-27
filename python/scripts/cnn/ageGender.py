@@ -49,7 +49,7 @@ def age_gender_model(input_shape, nb_classes):
     x_input = Input(input_shape)
     # Conv Layer 1
     x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
-               padding = "valid", kernel_initializer='glorot_uniform')(x_input)
+               padding = "valid", name = 'conv-1',kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
@@ -57,26 +57,26 @@ def age_gender_model(input_shape, nb_classes):
     
     # Conv Layer 2
     x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
-               padding = "valid",kernel_initializer='glorot_uniform')(x)
+               padding = "valid",name= 'conv-2',kernel_initializer='glorot_uniform')(x)
     x = Activation("relu")(x)
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     x = BatchNormalization()(x)
 
     # Conv Layer 3
     x = Conv2D(filters = 512, kernel_size = (3,3), strides = (1,1), 
-               padding = "valid",kernel_initializer='glorot_uniform')(x)
+               padding = "valid",name= 'conv-3',kernel_initializer='glorot_uniform')(x)
     x = Activation("relu")(x)
     x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
     x = BatchNormalization()(x)
         
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D()(x)
     
-    x = Dense(512, activation = "relu")(x)
+    x = Dense(512, activation = "relu",name='dense-1')(x)
     x = Dropout(rate = 0.5)(x)
-    x = Dense(512, activation ="relu")(x)
+    x = Dense(512, activation ="relu",name='dense-2')(x)
     x = Dropout(rate = 0.5)(x)
 
-    predictions = Dense(nb_classes, activation="softmax")(x)
+    predictions = Dense(nb_classes, activation="softmax",name="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
 
@@ -86,7 +86,7 @@ def age_gender_model(input_shape, nb_classes):
 
 def build_model(model, config_dict):
 
-    hdf5_path = config_dict['hdf5_path']
+    #hdf5_path = config_dict['hdf5_path']
 
 
     # Optimizer
@@ -106,29 +106,29 @@ def build_model(model, config_dict):
 
     train_generator = train_datagen.flow_from_directory(
             config_dict['train_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
-            class_mode='binary')
+            class_mode='categorical')
 
     validation_generator = test_datagen.flow_from_directory(
             config_dict['eval_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
-            class_mode='binary')
+            class_mode='categorical')
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
-    hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],
+    hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],verbose = 2,
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
 
     model.save(config_dict['model_path'])
-    del model 
+    #del model 
 
 if __name__ == '__main__':
     config_dict = get_configs()
     model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])
     model_memory_params(config_dict['batch_size'], model)
-    #build_model(model, config_dict)
+    build_model(model, config_dict)
 
 
 
