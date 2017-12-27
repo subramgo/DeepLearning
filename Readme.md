@@ -14,3 +14,17 @@ create a folder 'data' inside the directory 'python'
 	   This has the images cropped to 100 x 100 and saved along with labels.
 	   There are two lables, 1 where we have the age and gender separtately stored
 	   Another label where we have a 16 dim Y variable.
+
+
+## Object Detection / Localizaiton
+
+using DLUtils/downloadimages.py, download images "boat in sea"
+stored in data/sea/boats/.
+
+* Image annotation.
+
+outside the virutalenvironment
+brew install qt qt4 
+brew install pyqt  # qt4 is deprecated
+pip install labelme
+
