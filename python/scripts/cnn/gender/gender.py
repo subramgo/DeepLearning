@@ -106,13 +106,13 @@ def build_model(model, config_dict):
 
     train_generator = train_datagen.flow_from_directory(
             config_dict['train_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
             class_mode='binary')
 
     validation_generator = test_datagen.flow_from_directory(
             config_dict['eval_path'],
-            target_size=config_dict['input_shape'],
+            target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
             class_mode='binary')
 

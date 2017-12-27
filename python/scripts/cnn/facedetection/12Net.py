@@ -7,7 +7,7 @@ import numpy as np
 import h5py
 import random
 from keras.utils import np_utils
-from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Flatten, Activation,Dense, Dropout, BatchNormalization,GlobalAveragePooling2D
+from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Reshape,Flatten, Activation,Dense, Dropout, BatchNormalization,GlobalAveragePooling2D
 from keras.models import Model
 from keras.backend import tf as ktf
 from keras import optimizers
@@ -35,20 +35,29 @@ def net12_model():
     nb_classes = 2
 
     x_input = Input(input_shape)
-    # Conv Layer 1
+    # Conv Layer 1 # Input (12,12,3)
     x = Conv2D(filters = 16, kernel_size = (3,3), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
     x = Activation("relu")(x)
-    # Conv Layer 2
+
+    print(x.shape)
+
+    # Conv Layer 2 # Input ()
     x = Conv2D(filters = 16, kernel_size = (4,4), strides = (1,1), 
                padding = "valid",kernel_initializer='glorot_uniform')(x)
     x = Activation("relu")(x)
-    # Conv Layer 3
-    x = Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
-               padding = "valid",kernel_initializer='glorot_uniform')(x)
 
-    predictions = Dense(nb_classes, activation="softmax")(x)
+    print(x.shape)
+    # Conv Layer 3
+    x= Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
+               padding = "valid",kernel_initializer='glorot_uniform', activation = "softmax")(x)
+
+    x = Reshape((2,))(x)           
+    predictions = Activation("softmax",name="final_softmax")(x)
+   # x = Dense(16, activation = "relu")(x)
+
+    #predictions = Dense(nb_classes, activation="softmax")(x)
     
     model = Model(inputs = x_input, outputs = predictions)
 
