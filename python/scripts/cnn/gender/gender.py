@@ -13,35 +13,19 @@ from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Flatten, Activation,
 from keras.models import Model
 from keras.backend import tf as ktf
 from keras import optimizers
-from keras.callbacks import History, EarlyStopping
+from keras.callbacks import History, EarlyStopping,ReduceLROnPlateau,CSVLogger,ModelCheckpoint
 import keras.backend as K
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator
-import configparser
-from ast import literal_eval
+from DLUtils.configs import get_configs
 
 K.set_image_data_format('channels_last')
 np.random.seed(123)
 
-def get_configs():
-    Config = configparser.ConfigParser()
-    Config.read('../settings/models.ini')
-    section = 'agegender'
-    dict1 = {}
-    options = Config.options(section)
-    for option in options:
-        try:
-            dict1[option] = literal_eval(Config.get(section, option))
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    print (dict1)
-    return dict1
+
 
 def age_gender_model(input_shape, nb_classes):
     """
@@ -86,15 +70,18 @@ def age_gender_model(input_shape, nb_classes):
 
 def build_model(model, config_dict):
 
-    hdf5_path = config_dict['hdf5_path']
 
 
     # Optimizer
     sgd = optimizers.SGD(lr= config_dict['learning_rate'] , momentum = config_dict['momentum']
         , decay=1e-6, nesterov=False)
    
-    # Callbacks
-    callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto')]
+ # Callbacks
+    callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
+    ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0), 
+    CSVLogger(config_dict['log_path'], separator=',', append=False),
+    ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
+
 
     train_datagen = ImageDataGenerator(
             rescale=1./255,
@@ -122,10 +109,9 @@ def build_model(model, config_dict):
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
 
     model.save(config_dict['model_path'])
-    del model 
 
 if __name__ == '__main__':
-    config_dict = get_configs()
+    config_dict = get_configs('gender')
     model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])
     model_memory_params(config_dict['batch_size'], model)
     #build_model(model, config_dict)
