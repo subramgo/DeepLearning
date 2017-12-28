@@ -3,9 +3,7 @@ from keras.models import Model
 import h5py
 import sys
 import os
-#import sys,os
-#sys.path.append(os.getcwd())
-from DLUtils.evaluate import DemographicClassifier
+from DLUtils.evaluate import GenderClassifier
 import cv2
 import glob
 
@@ -21,19 +19,17 @@ else:
 	print("Invalid path")
 	exit()
 
-model_path = '../models/age_gender_model-0.3.h5'
-eval = DemographicClassifier(model_path)
+eval = GenderClassifier()
 
-f = open('results.txt', 'w')
 
 if process_multiple:
+	f = open('results.txt', 'w')
+
 	file_list = glob.glob(image_path + '*.jpg')
 	for file in file_list:
 		print(file)
 		image = cv2.imread(file, cv2.IMREAD_COLOR)
-		resized_image = cv2.resize(image, (100, 100)) 
-		resized_image = resized_image.reshape(1,100,100,3)
-		gender = eval.process(resized_image, None, 1)
+		gender = eval.process(image, None, 1)
 		f.write(str(file) + ',' + str(gender) + '\n')
 		gender = eval.process(resized_image)
 		f.write(str(file) + ',' + str(gender) + '/n')
@@ -42,11 +38,8 @@ if process_multiple:
 
 else:
 	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-	resized_image = cv2.resize(image, (100, 100)) 
-	resized_image = resized_image.reshape(1,100,100,3)
-
-	gender = eval.process(resized_image)
-	print(str(file) + ',' + str(gender))
+	gender = eval.process(image)
+	print(str(gender))
 
 
 
