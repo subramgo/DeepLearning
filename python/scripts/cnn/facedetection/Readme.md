@@ -13,9 +13,12 @@ There are three networks in total
 
 ### 12Net
 
-* data/facedetection/12net/faces
+Given an image find if a face is present in the image.
+12Net.py
+
+* data/facedetection/12net/facedetection/train/face
 	* all face images from adience	
-* data/facedetection/12net/no-faces
+* data/facedetection/12net/facedetection/train/noface
 	* all images from cifar-10
 
 Read the images, resize them to 12 x 12 and train a binary classifier network.
