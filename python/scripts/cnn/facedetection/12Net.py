@@ -97,7 +97,7 @@ def build_model(model, config_dict):
     # Callbacks
     callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
     ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0), 
-    CSVLogger("log.csv", separator=',', append=False),
+    CSVLogger(config_dict['log_path'], separator=',', append=False),
     ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
 
     train_datagen = ImageDataGenerator(
@@ -124,7 +124,7 @@ def build_model(model, config_dict):
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
-    hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],
+    hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'], callbacks = callbacks,
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'],verbose=2)
 
     model.save(config_dict['model_path'])
