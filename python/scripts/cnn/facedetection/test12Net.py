@@ -14,6 +14,18 @@ model = load_model(model_path)
 image_path = sys.argv[1]
 
 
+def simple_test(image_path):
+	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+	image = image * 1./ 255
+	image = cv2.resize(image, (12,12))
+	image = image.reshape((1,12,12,3))
+	prediction = model.predict(image, batch_size=1)
+	idx = np.argmax(prediction[0])
+	print(prediction[0])
+	print(np.exp(prediction[0]))
+	print(idx)
+
+
 def get_pyramids(img, steps = 6):
 	# https://docs.opencv.org/3.1.0/dc/dff/tutorial_py_pyramids.html
 	a = img.copy()
@@ -56,7 +68,7 @@ def test_pipeline(image_path):
 	return all_windows
 
 
-if __name__ == '__main__':
+def run_pipeline(image_path):
 	#print(model.to_json())
 	#big_pic(image_path)
 	all_windows = test_pipeline(image_path)
@@ -66,6 +78,9 @@ if __name__ == '__main__':
 		image = cv2.rectangle(image, (x, y), (x + window_size[0], y + window_size[1]), (0, 255, 0), 2)
 	cv2.imshow("image",image)
 	cv2.waitKey(0)
+
+if __name__ == '__main__':
+	simple_test(image_path)
 
 
 
