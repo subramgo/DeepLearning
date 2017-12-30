@@ -13,6 +13,7 @@ from keras.backend import tf as ktf
 from keras import optimizers
 from keras.callbacks import History, EarlyStopping,ReduceLROnPlateau,CSVLogger,ModelCheckpoint
 import keras.backend as K
+from keras.engine import Layer
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
 from DLUtils.DataGenerator import adience_datagenerator,adience_datagenerator_16classes
@@ -26,7 +27,21 @@ K.set_image_data_format('channels_last')
 np.random.seed(123)
 
 
+class Softmax4D(Layer):
+    def __init__(self, axis=-1, **kwargs):
+        self.axis = axis
+        super(Softmax4D, self).__init__(**kwargs)
 
+    def build(self, input_shape):
+        pass
+
+    def call(self, x, mask=None):
+        e = K.exp(x - K.max(x, axis=self.axis, keepdims=True))
+        s = K.sum(e, axis=self.axis, keepdims=True)
+        return e / s
+
+    def get_output_shape_for(self, input_shape):
+        return input_shape
 
 
 def net12_model():
@@ -38,6 +53,7 @@ def net12_model():
     # Conv Layer 1 # Input (12,12,3)
     x = Conv2D(filters = 16, kernel_size = (3,3), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
+    print(x.shape)
     x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
     x = Activation("relu")(x)
 
@@ -50,11 +66,14 @@ def net12_model():
 
     print(x.shape)
     # Conv Layer 3
-    x= Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
-               padding = "valid",kernel_initializer='glorot_uniform', activation = "softmax")(x)
+    #x= Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
+    #          padding = "valid",kernel_initializer='glorot_uniform', activation = "softmax")(x)
 
-    x = Reshape((2,))(x)           
-    predictions = Activation("softmax",name="final_softmax")(x)
+    x = Dense(16,activation = "relu")(x)
+
+    print(x.shape)
+
+    predictions = Dense(2, activation="softmax")(x)
    # x = Dense(16, activation = "relu")(x)
 
     #predictions = Dense(nb_classes, activation="softmax")(x)
@@ -93,21 +112,23 @@ def build_model(model, config_dict):
             config_dict['train_path'],
             target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
+            classes = ['face','noface'],
             class_mode='categorical')
 
     validation_generator = test_datagen.flow_from_directory(
             config_dict['eval_path'],
             target_size=config_dict['target_size'],
             batch_size=config_dict['batch_size'],
+            classes =['face','noface'],
             class_mode='categorical')
 
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],
-        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
+        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'],verbose=2)
 
     model.save(config_dict['model_path'])
-    del model 
+    #del model 
 
 if __name__ == '__main__':
     config_dict = get_configs('faces12net')
