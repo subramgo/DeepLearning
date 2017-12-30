@@ -68,7 +68,7 @@ def net12_model():
     # Conv Layer 3
     #x= Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
     #          padding = "valid",kernel_initializer='glorot_uniform', activation = "softmax")(x)
-
+    x = Flatten()(x)
     x = Dense(16,activation = "relu")(x)
 
     print(x.shape)
