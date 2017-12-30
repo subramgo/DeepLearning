@@ -27,21 +27,7 @@ K.set_image_data_format('channels_last')
 np.random.seed(123)
 
 
-class Softmax4D(Layer):
-    def __init__(self, axis=-1, **kwargs):
-        self.axis = axis
-        super(Softmax4D, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        pass
-
-    def call(self, x, mask=None):
-        e = K.exp(x - K.max(x, axis=self.axis, keepdims=True))
-        s = K.sum(e, axis=self.axis, keepdims=True)
-        return e / s
-
-    def get_output_shape_for(self, input_shape):
-        return input_shape
 
 
 def net12_model():
@@ -54,9 +40,10 @@ def net12_model():
     x = Conv2D(filters = 16, kernel_size = (3,3), strides = (1,1), \
                padding = "valid", kernel_initializer='glorot_uniform')(x_input)
     print(x.shape)
-    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
     x = Activation("relu")(x)
 
+    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
+   
     print(x.shape)
 
     # Conv Layer 2 # Input ()

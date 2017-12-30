@@ -4,25 +4,41 @@ import cv2
 import sys
 import numpy as np
 import time
+from keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
+import keras.backend as K
+from DLUtils.configs import get_configs
+
+K.set_image_data_format('channels_last')
+
 
 
 # Load the model
-model_path = '../cellar/faces12net.h5'
+model_path = '../cellar/face12net_1.h5'
 model = load_model(model_path)
 
 #Get an input image from commandline
-image_path = sys.argv[1]
+#image_path = sys.argv[1]
 
+
+def gen_test():
+	test_datagen = ImageDataGenerator(rescale=1./255)
+	validation_generator = test_datagen.flow_from_directory(
+            config_dict['eval_path'],
+            target_size=config_dict['target_size'],
+            batch_size=config_dict['batch_size'],
+            classes =['face','noface'],
+            class_mode='categorical')
+	predictions = model.predict_generator(validation_generator, steps = 1)
+	print(predictions)
 
 def simple_test(image_path):
 	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-	image = image * 1./ 255
 	image = cv2.resize(image, (12,12))
+	image = image * (1.0/255)
 	image = image.reshape((1,12,12,3))
 	prediction = model.predict(image, batch_size=1)
 	idx = np.argmax(prediction[0])
 	print(prediction[0])
-	print(np.exp(prediction[0]))
 	print(idx)
 
 
@@ -80,7 +96,9 @@ def run_pipeline(image_path):
 	cv2.waitKey(0)
 
 if __name__ == '__main__':
-	simple_test(image_path)
+	#simple_test(image_path)
+	config_dict = get_configs('faces12net')
+	gen_test()
 
 
 
