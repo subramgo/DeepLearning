@@ -30,6 +30,9 @@ def gen_test():
             class_mode='categorical')
 	predictions = model.predict_generator(validation_generator, steps = 1)
 	print(predictions)
+	for p in predictions:
+		print(p,np.argmax(p))
+	print(model.evaluate_generator(validation_generator, steps = None))
 
 def simple_test(image_path):
 	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
