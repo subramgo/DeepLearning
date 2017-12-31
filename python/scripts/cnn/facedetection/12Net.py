@@ -114,7 +114,7 @@ def build_model(model, config_dict):
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'], callbacks = callbacks,
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'],verbose=2)
 
-    model.model.save(config_dict['model_path'])
+    model.save(config_dict['model_path'])
     #del model 
 
 if __name__ == '__main__':
