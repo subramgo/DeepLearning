@@ -16,10 +16,9 @@ import keras.backend as K
 from keras.engine import Layer
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
-from DLUtils.DataGenerator import adience_datagenerator,adience_datagenerator_16classes
+from DLUtils.DataGenerator import face_12net_train_generator, face_12net_eval_generator
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from DLUtils.configs import get_configs
-from keras.preprocessing.image import ImageDataGenerator
 
 K.set_image_data_format('channels_last')
 
@@ -80,6 +79,9 @@ def build_model(model, config_dict):
     # Optimizer
     sgd = optimizers.SGD(lr= config_dict['learning_rate'] , momentum = config_dict['momentum']
         , decay=1e-6, nesterov=False)
+
+    train_generator = face_12net_train_generator(config_dict['batch_size'])
+    eval_generator = face_12net_eval_generator(config_dict['batch_size'])
    
     # Callbacks
     callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
@@ -87,32 +89,12 @@ def build_model(model, config_dict):
     CSVLogger(config_dict['log_path'], separator=',', append=False),
     ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
 
-    train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True)
-
-    test_datagen = ImageDataGenerator(rescale=1./255)
-
-    train_generator = train_datagen.flow_from_directory(
-            config_dict['train_path'],
-            target_size=config_dict['target_size'],
-            batch_size=config_dict['batch_size'],
-            classes = ['face','noface'],
-            class_mode='categorical')
-
-    validation_generator = test_datagen.flow_from_directory(
-            config_dict['eval_path'],
-            target_size=config_dict['target_size'],
-            batch_size=config_dict['batch_size'],
-            classes =['face','noface'],
-            class_mode='categorical')
-
-
+    # compile model
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
+
+    # train model
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'], callbacks = callbacks,
-        epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'],verbose=2)
+        epochs=config_dict['epochs'], validation_data=eval_generator,validation_steps=config_dict['validation_steps'],verbose=2)
 
     model.save(config_dict['model_path'])
     #del model 

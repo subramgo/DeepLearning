@@ -12,6 +12,9 @@ import h5py
 csv_file_path = '../data/facedetection/final.csv'
 hdf5_path = '../data/facedetection/12net.h5'
 
+image_w = 12
+image_h = 12
+
 labels_df = pd.read_csv(csv_file_path)
 train_df = labels_df[labels_df['type'] == 'train']
 eval_df = labels_df[labels_df['type'] == 'eval'] 
@@ -23,8 +26,8 @@ train_images = train_df.shape[0]
 print("Train {} Eval {} Total {}".format(train_images, eval_images, total_images))
 
 ############### h5py file creation #####################
-train_shape = (train_images, 15, 15, 3)
-eval_shape  = (eval_images, 15, 15, 3)
+train_shape = (train_images, image_w, image_h, 3)
+eval_shape  = (eval_images, image_w, image_h, 3)
 
 # Open a hdf5 file and create earray
 hdf5_file = h5py.File(hdf5_path, mode = 'w')
@@ -51,7 +54,7 @@ for (_type, path) in zip(type_list, images_location_list):
         print("Train data {}/{}".format(i, total_images))
     
     image = cv2.imread(path, cv2.IMREAD_COLOR)
-    resized_image = cv2.resize(image, (15, 15)) 
+    resized_image = cv2.resize(image, (image_w, image_h)) 
     if _type == 'train':
     	hdf5_file["train_images"][train_i, ...] = resized_image[None]
     	train_i+=1
