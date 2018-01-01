@@ -16,57 +16,30 @@ import keras.backend as K
 from keras.engine import Layer
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
-from DLUtils.DataGenerator import face_12net_train_generator, face_12net_eval_generator
+from DLUtils.DataGenerator import vgg_train_generator, vgg_eval_generator
+from DLUtils.h5Utils import create_h5_file
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from DLUtils.configs import get_configs
+from keras.applications.vgg16 import VGG16
 
 K.set_image_data_format('channels_last')
-
-
 np.random.seed(123)
 
 
 
-
-
-def net12_model():
-
-    input_shape = (12, 12, 3)
-    nb_classes = 2
-
-    x_input = Input(input_shape)
-    # Conv Layer 1 # Input (12,12,3)
-    x = Conv2D(filters = 16, kernel_size = (3,3), strides = (1,1), \
-               padding = "valid", kernel_initializer='glorot_uniform')(x_input)
-    print(x.shape)
-    x = Activation("relu")(x)
-
-    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
-   
-    print(x.shape)
-
-    # Conv Layer 2 # Input ()
-    x = Conv2D(filters = 16, kernel_size = (4,4), strides = (1,1), 
-               padding = "valid",kernel_initializer='glorot_uniform')(x)
-    x = Activation("relu")(x)
-
-    print(x.shape)
-    # Conv Layer 3
-    #x= Conv2D(filters = 2, kernel_size = (1,1), strides = (1,1), 
-    #          padding = "valid",kernel_initializer='glorot_uniform', activation = "softmax")(x)
-    x = Flatten()(x)
-    x = Dense(16,activation = "relu")(x)
-
-    print(x.shape)
-
-    predictions = Dense(2, activation="softmax")(x)
-   # x = Dense(16, activation = "relu")(x)
-
-    #predictions = Dense(nb_classes, activation="softmax")(x)
+def fd_model():
+    model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
     
-    model = Model(inputs = x_input, outputs = predictions)
-
+    input = Input(shape=(3,200,200),name = 'image_input')
     
+    output_vgg16_conv = model_vgg16_conv(input)
+
+    x = Flatten(name='flatten')(output_vgg16_conv)
+    x = Dense(4096, activation='relu', name='fc1')(x)
+    x = Dense(4096, activation='relu', name='fc2')(x)
+    x = Dense(2, activation='softmax', name='predictions')(x)
+    model = Model(input=input, output=x)
+
     return model
 
 
@@ -80,8 +53,8 @@ def build_model(model, config_dict):
     sgd = optimizers.SGD(lr= config_dict['learning_rate'] , momentum = config_dict['momentum']
         , decay=1e-6, nesterov=False)
 
-    train_generator = face_12net_train_generator(config_dict['batch_size'])
-    eval_generator = face_12net_eval_generator(config_dict['batch_size'])
+    train_generator = vgg_train_generator(config_dict['batch_size'])
+    eval_generator =  vgg_eval_generator(config_dict['batch_size'])
    
     # Callbacks
     callbacks = [#EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
@@ -109,7 +82,10 @@ def build_model(model, config_dict):
     #del model 
 
 if __name__ == '__main__':
-    config_dict = get_configs('faces12net')
-    model = net12_model()
+
+    create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',100,100)
+
+    config_dict = get_configs('vgg')
+    model = fd_model()
     model_memory_params(config_dict['batch_size'], model)
     build_model(model, config_dict)
