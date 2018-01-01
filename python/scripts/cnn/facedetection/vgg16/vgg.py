@@ -57,7 +57,7 @@ def build_model(model, config_dict):
     eval_generator =  vgg_eval_generator(config_dict['batch_size'])
    
     # Callbacks
-    callbacks = [#EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
+    callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'), 
     ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0), 
     CSVLogger(config_dict['log_path'], separator=',', append=False),
     ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
