@@ -30,7 +30,7 @@ np.random.seed(123)
 def fd_model():
     model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
     
-    input = Input(shape=(3,200,200),name = 'image_input')
+    input = Input(shape=(200,200,3),name = 'image_input')
     
     output_vgg16_conv = model_vgg16_conv(input)
 
@@ -83,9 +83,9 @@ def build_model(model, config_dict):
 
 if __name__ == '__main__':
 
-    create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',100,100)
+    #create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',200,200)
 
     config_dict = get_configs('vgg')
     model = fd_model()
-    model_memory_params(config_dict['batch_size'], model)
+    #model_memory_params(config_dict['batch_size'], model)
     build_model(model, config_dict)

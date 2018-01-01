@@ -5,7 +5,7 @@ from keras.utils import np_utils
 def vgg_train_generator(batchsize):
 	filepath = '../data/facedetection/vgg.h5'
 
-	dimensions = (batchsize, 100,100 ,3)
+	dimensions = (batchsize, 200,200 ,3)
 	while 1:
 
 		f = h5py.File(filepath, "r")
@@ -26,7 +26,7 @@ def vgg_train_generator(batchsize):
 def vgg_eval_generator(batchsize):
 	filepath = '../data/facedetection/vgg.h5'
 
-	dimensions = (batchsize, 100, 100,3)
+	dimensions = (batchsize, 200, 200,3)
 	while 1:
 
 		f = h5py.File(filepath, "r")
