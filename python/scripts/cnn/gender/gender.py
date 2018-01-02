@@ -21,6 +21,7 @@ from DLUtils.DataGenerator import adience_train_generator,adience_eval_generator
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator
 from DLUtils.configs import get_configs
+from DLUtils.h5Utils import create_h5_file
 
 K.set_image_data_format('channels_last')
 np.random.seed(123)
