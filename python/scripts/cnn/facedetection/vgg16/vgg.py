@@ -28,13 +28,12 @@ np.random.seed(123)
 
 
 def fd_model():
-    model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
-    
-    input = Input(shape=(200,200,3),name = 'image_input')
-    
-    output_vgg16_conv = model_vgg16_conv(input)
 
-    x = Flatten(name='flatten')(output_vgg16_conv)
+    model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
+    input = Input(shape=(200,200,3),name = 'image_input')
+    output_vgg16_conv = model_vgg16_conv(input)
+    x = GlobalAveragePooling2D()(output_vgg16_conv)
+    x = Flatten(name='flatten')(x)
     x = Dense(4096, activation='relu', name='fc1')(x)
     x = Dense(4096, activation='relu', name='fc2')(x)
     x = Dense(2, activation='softmax', name='predictions')(x)
@@ -69,21 +68,19 @@ def build_model(model, config_dict):
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'], callbacks = callbacks,
         epochs=config_dict['epochs'], validation_data=eval_generator,validation_steps=config_dict['validation_steps'],verbose=2)
 
-    """
-    for i in range(config_dict['epochs']):
-        avg_acc = 0
-        for j in range(config_dict['steps_per_epoch']):
-            x, y = next(train_generator)
-            mets = model.train_on_batch(x, y)
-            avg_acc+=mets[1]
-        print("Epoch {} Accuracy {}".format(i+1, avg_acc / (1.0 * config_dict['steps_per_epoch']) ))
-    """
+
+    model.save_weights(config_dict['weights_path'])
     model.save(config_dict['model_path'])
     #del model 
 
 if __name__ == '__main__':
 
-    #create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',200,200,'class','directory','type')
+    config_dict = get_configs('vgg')
+
+
+    if len(sys.argv) >= 2:
+        if sys.argv[1] == 'create_h5':
+            create_h5_file(config_dict['label_csv'], config_dict['h5_input'],config_dict['target_size'][0],config_dict['target_size'][0],'class','directory','type')
 
     config_dict = get_configs('vgg')
     model = fd_model()
