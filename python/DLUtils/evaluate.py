@@ -3,12 +3,12 @@ from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
 import cv2
-from DLUtils.configs import get_config
+from DLUtils.configs import get_configs
 
 
 
 class  GenderClassifier():
-    gen_filter = {'m':0,'f':1}
+    gender_filter = {0:'male',1:'female'}
 
     def __init__(self):
       self.config_dict = get_configs('gender')
@@ -19,7 +19,7 @@ class  GenderClassifier():
       self.model = None
       self.scores = None
       self.predictions = None
-      target_size = config_dict['target_size']
+      target_size = self.config_dict['target_size']
       self.image_w = target_size[0]
       self.image_h = target_size[1]
 
@@ -48,7 +48,7 @@ class  GenderClassifier():
         resized = cv2.resize(self.x_test, (self.image_w, self.image_h)) 
         self.preprocessed = resized.reshape(1,self.image_w,self.image_h,3)
 
-    def process(self, x_test, y_test = None, batch_size):
+    def process(self, x_test, y_test , batch_size):
         self.x_test = x_test
         self.y_test = y_test
         self.batch_size = batch_size
