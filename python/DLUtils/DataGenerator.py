@@ -3,9 +3,32 @@ import h5py
 from keras.utils import np_utils
 
 
+def _generator(x_label, y_label, filepath,dimensions):
+	while 1:
+
+		f = h5py.File(filepath, "r")
+		filesize = len(f['train_labels'])
+
+		n_entries = 0
+		while n_entries < (filesize - batchsize):
+			x_train= f[x_label][n_entries : n_entries + batchsize]
+			x_train= np.reshape(x_train, dimensions).astype('float32')
+
+			y_train = f[y_label][n_entries:n_entries+batchsize]
+			y_train_onecoding = np_utils.to_categorical(y_train, 2)
+
+			n_entries += batchsize
+
+			# Shuffle
+			p = np.random.permutation(len(y_train_onecoding))
+			yield (x_train[p], y_train_onecoding[p])
+		f.close()
+
+
 def adience_train_generator(batchsize):
 	filepath = '../data/Adience/hdf5/adience-100.h5'
 	dimensions = (batchsize, 100,100 ,3)
+#	_generator('train_images','train_labels',filepath,dimensions )
 	while 1:
 
 		f = h5py.File(filepath, "r")
@@ -66,8 +89,9 @@ def vgg_train_generator(batchsize):
 			y_train = f['train_labels'][n_entries:n_entries+batchsize]
 			y_train_onecoding = np_utils.to_categorical(y_train, 2)
 
-			n_entries += batchsize
-			yield (x_train, y_train_onecoding)
+			# Shuffle
+			p = np.random.permutation(len(y_train_onecoding))
+			yield (x_train[p], y_train_onecoding[p])
 		f.close()
 
 def vgg_eval_generator(batchsize):
@@ -88,7 +112,9 @@ def vgg_eval_generator(batchsize):
 			y_train_onecoding = np_utils.to_categorical(y_train, 2)
 
 			n_entries += batchsize
-			yield (x_train, y_train_onecoding)
+			# Shuffle
+			p = np.random.permutation(len(y_train_onecoding))
+			yield (x_train[p], y_train_onecoding[p])
 		f.close()
 
 
