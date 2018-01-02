@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) >= 2:
         if sys.argv[1] == 'create_h5':
-            create_h5_file(config_dict['label_csv'], config_dict['label_csv'],config_dict['target_size'][0],config_dict['target_size'][0],'gender_class','image_loc','type')
+            create_h5_file(config_dict['label_csv'], config_dict['h5_input'],config_dict['target_size'][0],config_dict['target_size'][0],'gender_class','image_loc','type')
 
 
     model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])

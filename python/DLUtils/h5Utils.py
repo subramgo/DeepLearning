@@ -9,12 +9,7 @@ import h5py
 
 def create_h5_file(csv_file_path, hdf5_path, image_w, image_h,class_col, directory_col,type_col=None):
 
-    # Labels folder
-   # csv_file_path = '../data/facedetection/final.csv'
-    #hdf5_path = '../data/facedetection/12net.h5'
 
-    #image_w = 12
-    #image_h = 12
 
     labels_df = pd.read_csv(csv_file_path)
     train_df = labels_df[labels_df['type'] == 'train']
