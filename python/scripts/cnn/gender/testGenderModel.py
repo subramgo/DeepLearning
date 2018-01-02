@@ -27,12 +27,9 @@ if process_multiple:
 
 	file_list = glob.glob(image_path + '*.jpg')
 	for file in file_list:
-		print(file)
 		image = cv2.imread(file, cv2.IMREAD_COLOR)
 		gender = eval.process(image, None, 1)
 		f.write(str(file) + ',' + str(gender) + '\n')
-		gender = eval.process(resized_image)
-		f.write(str(file) + ',' + str(gender) + '/n')
 
 	f.close()
 

@@ -17,7 +17,7 @@ from keras.callbacks import History, EarlyStopping,ReduceLROnPlateau,CSVLogger,M
 import keras.backend as K
 import sys,os
 from DLUtils.evaluate import DemographicClassifier
-from DLUtils.DataGenerator import adience_datagenerator
+from DLUtils.DataGenerator import adience_train_generator,adience_eval_generator
 from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator
 from DLUtils.configs import get_configs
@@ -32,32 +32,39 @@ def age_gender_model(input_shape, nb_classes):
     """
     x_input = Input(input_shape)
     # Conv Layer 1
-    x = Conv2D(filters = 96, kernel_size = (7,7), strides = (1,1), \
+    x = Conv2D(filters = 96, kernel_size = (5,5), strides = (1,1), \
                padding = "valid", name = 'conv-1',kernel_initializer='glorot_uniform')(x_input)
     
     x = Activation("relu")(x)
-    x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
+    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
     x = BatchNormalization()(x)
     
     # Conv Layer 2
     x = Conv2D(filters = 256, kernel_size = (5,5), strides = (1,1), 
                padding = "valid",name= 'conv-2',kernel_initializer='glorot_uniform')(x)
     x = Activation("relu")(x)
-    x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
+    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
     x = BatchNormalization()(x)
 
     # Conv Layer 3
-    x = Conv2D(filters = 512, kernel_size = (3,3), strides = (1,1), 
+    x = Conv2D(filters = 512, kernel_size = (5,5), strides = (1,1), 
+               padding = "valid",name= 'conv-4',kernel_initializer='glorot_uniform')(x)
+    x = Activation("relu")(x)
+    x = MaxPooling2D(pool_size = (3,3), strides = (2,2))(x)
+    x = BatchNormalization()(x)
+
+    # Conv Layer 4
+    x = Conv2D(filters = 1024, kernel_size = (1,1), strides = (1,1), 
                padding = "valid",name= 'conv-3',kernel_initializer='glorot_uniform')(x)
     x = Activation("relu")(x)
-    x = MaxPooling2D(pool_size = (3,3), strides = (1,1))(x)
-    x = BatchNormalization()(x)
+
         
-    x = GlobalAveragePooling2D()(x)
-    
-    x = Dense(512, activation = "relu",name='dense-1')(x)
+    x = Flatten()(x)
+    x = Dense(1024, activation = "relu",name='dense-1')(x)
     x = Dropout(rate = 0.5)(x)
-    x = Dense(512, activation ="relu",name='dense-2')(x)
+    x = Dense(512, activation = "relu",name='dense-2')(x)
+    x = Dropout(rate = 0.5)(x)
+    x = Dense(512, activation ="relu",name='dense-3')(x)
     x = Dropout(rate = 0.5)(x)
 
     predictions = Dense(nb_classes, activation="softmax",name="softmax")(x)
@@ -83,36 +90,29 @@ def build_model(model, config_dict):
     ModelCheckpoint(config_dict['check_path'], monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)]
 
 
-    train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True)
-
-    test_datagen = ImageDataGenerator(rescale=1./255)
-
-    train_generator = train_datagen.flow_from_directory(
-            config_dict['train_path'],
-            target_size=config_dict['target_size'],
-            batch_size=config_dict['batch_size'],
-            class_mode='categorical')
-
-    validation_generator = test_datagen.flow_from_directory(
-            config_dict['eval_path'],
-            target_size=config_dict['target_size'],
-            batch_size=config_dict['batch_size'],
-            class_mode='categorical')
-
+    train_generator = adience_train_generator(config_dict['batch_size'])
+    validation_generator = adience_eval_generator(config_dict['batch_size'])
 
     model.compile(optimizer = "sgd", loss = "categorical_crossentropy", metrics = ["accuracy"])
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],verbose = 2,
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
 
+
+    model.save_weights(config_dict['weights_path'])
     model.save(config_dict['model_path'])
 
 if __name__ == '__main__':
+
     config_dict = get_configs('gender')
+
+
+    if len(sys.argv) >= 2:
+        if sys.argv[1] == 'create_h5':
+            create_h5_file(config_dict['label_csv'], config_dict['label_csv'],config_dict['target_size'][0],config_dict['target_size'][0],'gender_class','image_loc','type')
+
+
     model = age_gender_model(config_dict['input_shape'], config_dict['nb_classes'])
+    print(model.summary())
     model_memory_params(config_dict['batch_size'], model)
     build_model(model, config_dict)
 

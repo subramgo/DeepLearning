@@ -10,20 +10,7 @@ class  GenderClassifier():
     gender_filter = {
               0:'Female' 
             , 1:'Male' 
-            , 2:'Female' 
-            , 3:'Male'
-            , 4:'Female'
-            , 5:'Male'
-            , 6:'Female'
-            , 7:'Male'
-            , 8:'Female'
-            , 9:'Male'
-            ,10:'Female'
-            ,11:'Male'
-            ,12:'Female'
-            ,13:'Male'
-            ,14:'Female'
-            ,15:'Male'
+
             }
     def __init__(self):
       self.model_path = '../cellar/gender_150x150.h5'
@@ -60,6 +47,7 @@ class  GenderClassifier():
         """
         resized = cv2.resize(image_arr, (150, 150)) 
         resized = resized.reshape(1,150,150,3)
+        resized = resized * (1.0 / 255)
         return resized
 
     def process(self, x_test, y_test=None, batch_size=1):
@@ -67,12 +55,12 @@ class  GenderClassifier():
 
         if y_test is not None:
             self.__evaluate(preprocessed, y_test,batch_size)
-            print("Score {}".format(self.scores[1]))
+            #print("Score {}".format(self.scores[1]))
             return None
 
         else:
             self.__predict(preprocessed, batch_size)
-            print(self.predictions)
+            #print(self.predictions)
             idx = np.argmax(self.predictions)
             return self.gender_filter[idx]
 

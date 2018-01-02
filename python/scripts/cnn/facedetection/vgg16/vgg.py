@@ -83,7 +83,7 @@ def build_model(model, config_dict):
 
 if __name__ == '__main__':
 
-    #create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',200,200)
+    #create_h5_file('../data/facedetection/final.csv', '../data/facedetection/vgg.h5',200,200,'class','directory','type')
 
     config_dict = get_configs('vgg')
     model = fd_model()
