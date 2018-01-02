@@ -3,63 +3,64 @@ from keras.models import load_model
 from keras.datasets import mnist 
 from keras.utils import np_utils
 import cv2
+from DLUtils.configs import get_config
 
 
 
 class  GenderClassifier():
-    gender_filter = {
-              0:'Female' 
-            , 1:'Male' 
+    gen_filter = {'m':0,'f':1}
 
-            }
     def __init__(self):
-      self.model_path = '../cellar/gender_150x150.h5'
+      self.config_dict = get_configs('gender')
+      self.x_test = None
+      self.preprocessed = None
+      self.y_test = None
+      self.batch_size = 1
       self.model = None
       self.scores = None
       self.predictions = None
+      target_size = config_dict['target_size']
+      self.image_w = target_size[0]
+      self.image_h = target_size[1]
+
+
       self.__load_model()
 
     def __load_model(self):
-      self.model = load_model(self.model_path)
+      self.model = load_model(self.config_dict['model_path'])
 
-    def __evaluate(self, x_test, y_test, batch_size):
-        self.x_test  = x_test
-        self.y_test  = y_test 
-        self.batch_size = batch_size
-        self.scores = self.model.evaluate(self.x_test, self.y_test, batch_size = self.batch_size)
+    def __evaluate(self):
+        self.scores = self.model.evaluate(self.preprocessed, self.y_test, batch_size = self.batch_size)
     
-    def __predict(self, x_test, batch_size):
-        self.x_test  = x_test
-        self.batch_size = batch_size
-        self.predictions = self.model.predict(self.x_test, batch_size=self.batch_size)
+    def __predict(self):
+
+        self.predictions = self.model.predict(self.preprocessed, batch_size=self.batch_size)
 
     def __cleanup(self):
         del self.model
 
-    def set_model(self,new_model_path):
-        self.__cleanup()
-        self.model_path = model_path
 
-    def input_preprocessing(self,image_arr):
+    def input_preprocessing(self):
         """ Preprocessing to match the training conditions for this model. 
         Apply resize, reshape, other scaling/whitening effects.
         x_test can be any image size greater than 100x100 and it will be resized
         """
-        resized = cv2.resize(image_arr, (150, 150)) 
-        resized = resized.reshape(1,150,150,3)
-        resized = resized * (1.0 / 255)
-        return resized
+        resized = cv2.resize(self.x_test, (self.image_w, self.image_h)) 
+        self.preprocessed = resized.reshape(1,self.image_w,self.image_h,3)
 
-    def process(self, x_test, y_test=None, batch_size=1):
-        preprocessed = self.input_preprocessing(x_test)
+    def process(self, x_test, y_test = None, batch_size):
+        self.x_test = x_test
+        self.y_test = y_test
+        self.batch_size = batch_size
+        self.input_preprocessing()
 
         if y_test is not None:
-            self.__evaluate(preprocessed, y_test,batch_size)
+            self.__evaluate()
             #print("Score {}".format(self.scores[1]))
             return None
 
         else:
-            self.__predict(preprocessed, batch_size)
+            self.__predict()
             #print(self.predictions)
             idx = np.argmax(self.predictions)
             return self.gender_filter[idx]
