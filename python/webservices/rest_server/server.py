@@ -15,5 +15,5 @@ def gender():
     data = request.data
     nparr = np.fromstring(data, np.uint8)
     image_arr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    pred_val = predictor.process(x_test=image_arr)
+    pred_val = predictor.process(x_test=image_arr, y_test=None, batch_size=1)
     return json.dumps({'gender': pred_val})
