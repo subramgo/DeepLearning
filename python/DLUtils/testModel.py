@@ -29,6 +29,7 @@ def simple_test(image_path):
 	image = cv2.resize(image, (image_w,image_h))
 	image = image.reshape((1,image_w,image_h,3))
 	prediction = model.predict(image, batch_size=1)
+	print(prediction.shape)
 	idx = np.argmax(prediction[0])
 	print(prediction[0])
 	print(idx)
