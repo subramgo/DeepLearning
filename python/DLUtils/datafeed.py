@@ -21,6 +21,8 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
                     #x_train= x_train.astype('float32')
 
                     y_train = f[y_label][n_entries:n_entries+batchsize]
+                    # data-specific formatting should be done elsewhere later, even onecoding
+                    # if dimensions is needed, can be gotten from x_train.shape
                     y_train_onecoding = np_utils.to_categorical(y_train)
 
                     n_entries += batchsize
