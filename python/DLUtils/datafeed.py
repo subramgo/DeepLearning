@@ -2,26 +2,26 @@ import numpy as np
 import h5py
 from keras.utils import np_utils
 
-def _generatorFactory(filepath,dimensions_minus_batch,x_label='train_images',y_label='train_labels'):
+from DLUtils import configs
+
+def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
     """
         Produces a generator function.
-        Give a filepath and data dimensions:
-          HDF5 data is loaded from the filepath
-          batchsize is prepended to the data dimensions for reshaping final output
-        x and y labels need to match the HDF5 file's columns
+        Give a filepath and column labels:
+            HDF5 data is loaded from the filepath
+            x and y labels need to match the HDF5 file's columns
     """
     def _generator(batchsize):
-        dimensions = (batchsize,)+dimensions_minus_batch
         while 1:
             with h5py.File(filepath, "r") as f:
                 filesize = len(f['train_labels'])
                 n_entries = 0
                 while n_entries < (filesize - batchsize):
                     x_train= f[x_label][n_entries : n_entries + batchsize]
-                    x_train= np.reshape(x_train, dimensions).astype('float32')
+                    #x_train= x_train.astype('float32')
 
                     y_train = f[y_label][n_entries:n_entries+batchsize]
-                    y_train_onecoding = np_utils.to_categorical(y_train, 2)
+                    y_train_onecoding = np_utils.to_categorical(y_train)
 
                     n_entries += batchsize
 
@@ -33,12 +33,10 @@ def _generatorFactory(filepath,dimensions_minus_batch,x_label='train_images',y_l
     return _generator
 
 
-_filepath = '../../data/Adience/hdf5/adience-100.h5'
-_dimensions = (100,100,3)
-adience_train_generator = _generatorFactory(_filepath,_dimensions)
+_filepath = configs.get_section_dict('adience')['data_path']
+_adience_factory = _generatorFactory(_filepath)
+adience_train_generator = _adience_factory(batchsize=3)
 
-"""
-Produce three data samples from adience set:
-    _generator = adience_train_generator(batchsize=3)
-    _generator.next()     
-"""
+
+
+
