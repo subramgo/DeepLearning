@@ -1,19 +1,6 @@
-## Data files
+# Tasks
 
-create a folder 'data' inside the directory 'python'
-
-* Adience dataset
-	* download adience, curl -O -u adiencedb:adience http://www.cslab.openu.ac.il/personal/Hassner/adiencedb/AdienceBenchmarkOfUnfilteredFacesForGenderAndAgeClassification/faces.tar.gz
-	* tar xvf faces.tar.gz
-	* Download labels (fold_0_data, fold_1_data,.....fold_4_data.txt)
-		* curl -O -u adiencedb:adience http://www.cslab.openu.ac.il/personal/Hassner/adiencedb/AdienceBenchmarkOfUnfilteredFacesForGenderAndAgeClassification/fold_3_data.txt
-
-	* Run img-process/adience-clean-label.py, this will create a file called 'labels.csv' in /data/Adience folder
-
-	* run img-process/adience-100.py to create adience-100.h5 in /data/Adience/hdf5 folder
-	   This has the images cropped to 100 x 100 and saved along with labels.
-	   There are two lables, 1 where we have the age and gender separtately stored
-	   Another label where we have a 16 dim Y variable.
+## Object Bounding
 
 
 ## Object Detection / Localizaiton
@@ -28,3 +15,32 @@ brew install qt qt4
 brew install pyqt  # qt4 is deprecated
 pip install labelme
 
+# Code
+
+## Deep Learning Utilities
+
+This `DLUtils` package contains utilities we'll want to use in:
+
+  * scripts
+  * webservices
+  * iPython notebooks
+
+From the directory containing `setup.py`, install in your virtualenv thusly:
+
+    pip install --editable .
+
+Now the packages listed in `setup.py` are installed in the current `pip` environment's library and available to all of the things we want to use them in listed above!
+
+## Web Services
+
+  * [REST Server](webservices/rest_server/README.md)
+  * [Web GUI Client for REST Service](webservices/webui/README.md)
+
+## Scripts
+
+Scalable scripts.
+
+
+## Notebooks
+
+Exploratory & development iPython notebooks.
