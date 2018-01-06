@@ -37,6 +37,12 @@ class Config:
             path = path[5:]
             path = os.path.join(self.my_path,path_to_data,path.strip('/'))
             path = os.path.abspath(path)
+        elif os.path.isabs(path):
+            """ check if path is absolute from default data location """
+            _test = os.path.join(self.my_path,'../..',path[1:])
+            if os.path.exists(os.path.abspath(_test)):
+                path = os.path.abspath(_test)
+
         return path
 
     def _eval(self,value):
