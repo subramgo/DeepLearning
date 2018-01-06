@@ -77,14 +77,11 @@ def age_model(input_shape, nb_classes):
 
 
 def build_model(model, config_dict):
-
-
-
     # Optimizer
     sgd = optimizers.SGD(lr= config_dict['learning_rate'] , momentum = config_dict['momentum']
         , decay=1e-6, nesterov=False)
 
- # Callbacks
+    # Callbacks
     callbacks = [EarlyStopping(monitor='acc', min_delta=config_dict['early_stop_th'], patience=5, verbose=0, mode='auto'),
     ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0),
     CSVLogger(config_dict['log_path'], separator=',', append=False),

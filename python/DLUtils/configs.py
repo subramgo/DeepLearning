@@ -9,7 +9,6 @@ import os.path
 from ast import literal_eval
 
 class Config:
-
     def __init__(self):
         self.my_path = os.path.abspath(os.path.dirname(__file__))
         self.config_path = '../settings/models.ini'
@@ -33,12 +32,7 @@ class Config:
     def _resolve_paths(self,path):
         """ check for paths relative to the package installation """
         path_to_data = '../../data/'
-        if path.startswith('data:'):
-            path = path[5:]
-            path = os.path.join(self.my_path,path_to_data,path.strip('/'))
-            path = os.path.abspath(path)
-        elif os.path.isabs(path):
-            """ check if path is absolute from default data location """
+        if os.path.isabs(path):
             _test = os.path.join(self.my_path,'../..',path[1:])
             if os.path.exists(os.path.abspath(_test)):
                 path = os.path.abspath(_test)
@@ -52,3 +46,7 @@ class Config:
             value = self._resolve_paths(value)
         return value
 
+def get_configs(section_name):
+    """ shorthand default way to grab configs and support other code """
+    config = Config()
+    return config.get_section_dict(section_name)
