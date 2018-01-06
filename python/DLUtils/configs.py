@@ -1,6 +1,8 @@
 """
     Default config file is located in "settings/models.ini"
     Can load another one using `load_configs(...)`
+    Absolute paths are checked relative to the package location.
+      e.g. '/data/stuff' will try '../../data/stuff'
 """
 
 import configparser
@@ -10,6 +12,7 @@ from ast import literal_eval
 
 class Config:
     def __init__(self):
+        self.default_root_path = '../..'
         self.my_path = os.path.abspath(os.path.dirname(__file__))
         self.config_path = '../settings/models.ini'
         
@@ -30,10 +33,9 @@ class Config:
         return {k:self._eval(val) for k,val in dict(self._config[section]).iteritems()}
 
     def _resolve_paths(self,path):
-        """ check for paths relative to the package installation """
-        path_to_data = '../../data/'
+        """ Check for paths relative to the package installation """
         if os.path.isabs(path):
-            _test = os.path.join(self.my_path,'../..',path[1:])
+            _test = os.path.join(self.my_path,self.default_root_path,path[1:])
             if os.path.exists(os.path.abspath(_test)):
                 path = os.path.abspath(_test)
 

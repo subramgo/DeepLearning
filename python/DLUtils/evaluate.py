@@ -5,6 +5,8 @@ from keras.utils import np_utils
 import cv2
 from DLUtils.configs import get_configs
 
+class AgeClassifier:
+    age_filter = {'(0, 2)' :0, '(4, 6)':1 , '(8, 12)':2, '(15, 20)':3,'(25, 32)':4,'(38, 43)':5, '(48, 53)':6, '(60, 100)':7}
 
 
 class  GenderClassifier():
