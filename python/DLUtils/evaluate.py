@@ -6,8 +6,64 @@ import cv2
 from DLUtils.configs import get_configs
 
 class AgeClassifier:
-    age_filter = {'(0, 2)' :0, '(4, 6)':1 , '(8, 12)':2, '(15, 20)':3,'(25, 32)':4,'(38, 43)':5, '(48, 53)':6, '(60, 100)':7}
-    #TODO simplify from DemographicClassifier
+    # age class labels
+    _filter = {'(0, 2)' :0, '(4, 6)':1 , '(8, 12)':2, '(15, 20)':3,'(25, 32)':4,'(38, 43)':5, '(48, 53)':6, '(60, 100)':7}
+
+    def __init__(self):
+        self.config_dict = get_configs('age')
+        self.x_test = None
+        self.preprocessed = None
+        self.y_test = None
+        self.batch_size = 1
+        self.model = None
+        self.scores = None
+        self.predictions = None
+        target_size = self.config_dict['target_size']
+        self.image_w = target_size[0]
+        self.image_h = target_size[1]
+
+
+        self.__load_model()
+
+    def __load_model(self):
+        self.model = load_model(self.config_dict['model_path'])
+
+    def __evaluate(self):
+        self.scores = self.model.evaluate(self.preprocessed, self.y_test, batch_size = self.batch_size)
+    
+    def __predict(self):
+
+        self.predictions = self.model.predict(self.preprocessed, batch_size=self.batch_size)
+
+    def __cleanup(self):
+        del self.model
+
+
+    def input_preprocessing(self):
+        """ Preprocessing to match the training conditions for this model. 
+        Apply resize, reshape, other scaling/whitening effects.
+        x_test can be any image size greater than 100x100 and it will be resized
+        """
+        resized = cv2.resize(self.x_test, (self.image_w, self.image_h)) 
+        self.preprocessed = resized.reshape(1,self.image_w,self.image_h,3)
+
+    def process(self, x_test, y_test , batch_size):
+        self.x_test = x_test
+        self.y_test = y_test
+        self.batch_size = batch_size
+        self.input_preprocessing()
+
+        if y_test is not None:
+            self.__evaluate()
+            #print("Score {}".format(self.scores[1]))
+            return None
+
+        else:
+            self.__predict()
+            #print(self.predictions)
+            idx = np.argmax(self.predictions)
+            return self._filter[idx]
+
 
 class  GenderClassifier():
     gender_filter = {0:'male',1:'female'}
