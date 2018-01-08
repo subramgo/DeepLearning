@@ -13,5 +13,7 @@ _config.read(path)
 
 def get_section_dict(section):
     """ Return dictionary with literal_eval values of the given section """
-    return {k:literal_eval(val) for k,val in dict(_config[section]).iteritems()}
+    return {k:literal_eval(val) for k,val in dict(_config[section]).items()}
 
+def get_configs(section):
+    return get_section_dict(section)
