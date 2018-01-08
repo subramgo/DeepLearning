@@ -15,7 +15,7 @@ class Config:
         self.default_root_path = '../..'
         self.my_path = os.path.abspath(os.path.dirname(__file__))
         self.config_path = '../settings/models.ini'
-        
+
         path = os.path.join(self.my_path, self.config_path)
         self.load_configs(path)
 
@@ -30,7 +30,7 @@ class Config:
             section = self._config.sections()[0]
             print("loading section '{}'".format(section))
 
-        return {k:self._eval(val) for k,val in dict(self._config[section]).iteritems()}
+        return {k:self._eval(val) for k,val in dict(self._config[section]).items()}
 
     def _resolve_paths(self,path):
         """ Check for paths relative to the package installation """
@@ -44,6 +44,10 @@ class Config:
     def _eval(self,value):
         """ Parse into Python objects using literal_eval. Resolve paths. """
         value = literal_eval(value)
+        try:
+            basestring
+        except NameError:
+            basestring = str
         if isinstance(value,basestring):
             value = self._resolve_paths(value)
         return value
