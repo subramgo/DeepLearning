@@ -81,7 +81,7 @@ def build_model(model, config_dict):
 
 if __name__ == '__main__':
 
-    config_dict = get_configs('gender')
+    config_dict = get_configs('gender_resnet')
 
 
     if len(sys.argv) >= 2:
