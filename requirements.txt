@@ -5,10 +5,11 @@ chardet==3.0.4
 configparser==3.5.0
 cycler==0.10.0
 decorator==4.1.2
--e git+https://github.com/subramgo/DeepLearning.git@418870c955e61d1a8cfa592e36bf33bdb9279b37#egg=DLUtils&subdirectory=python
 entrypoints==0.2.3
 enum34==1.1.6
 future==0.16.0
+pandas
+opencv-python
 graphviz==0.8.1
 h5py==2.7.1
 html5lib==0.9999999

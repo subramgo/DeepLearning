@@ -34,8 +34,8 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
     
     return _generator
 
-
-_filepath = configs.get_section_dict('adience')['data_path']
+config = configs.Config()
+_filepath = config.get_section_dict('adience')['data_path']
 _adience_factory = _generatorFactory(_filepath)
 adience_train_generator = _adience_factory(batchsize=3)
 
