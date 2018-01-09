@@ -72,13 +72,13 @@ def build_model(model, config_dict):
     #train_generator = adience_train_generator(config_dict['batch_size'])
     #validation_generator = adience_eval_generator(config_dict['batch_size'])
     _adience_train_factory = _generatorFactory(config_dict['h5_input'],x_label='train_images',y_label='train_labels')
-     train_generator = _adience_train_factory(dimensions=config_dict['target_size'] ,nbclasses=config_dict['nb_classes'],batchsize=config_dict['batch_size'])
+    train_generator = _adience_train_factory(dimensions=config_dict['target_size'] ,nbclasses=config_dict['nb_classes'],batchsize=config_dict['batch_size'])
 
-     _adience_eval_factory = _generatorFactory(config_dict['h5_input'],x_label='eval_images',y_label='eval_labels')
-     validation_generator = _adience_eval_factory(dimensions=config_dict['target_size'] ,nbclasses=config_dict['nb_classes'],batchsize=config_dict['batch_size'])
+    _adience_eval_factory = _generatorFactory(config_dict['h5_input'],x_label='eval_images',y_label='eval_labels')
+    validation_generator = _adience_eval_factory(dimensions=config_dict['target_size'] ,nbclasses=config_dict['nb_classes'],batchsize=config_dict['batch_size'])
 
 
-    model.compile(optimizer = sgd, loss = "categorical_crossentropy", metrics = ["accuracy"])
+    model.compile(optimizer = 'adam', loss = "categorical_crossentropy", metrics = ["accuracy"])
     
     hist = model.fit_generator(train_generator, steps_per_epoch=config_dict['steps_per_epoch'],verbose = 2,callbacks = callbacks,
         epochs=config_dict['epochs'], validation_data=validation_generator,validation_steps=config_dict['validation_steps'])
