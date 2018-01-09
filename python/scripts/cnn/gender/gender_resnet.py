@@ -39,7 +39,7 @@ def age_gender_model(input_shape, nb_classes):
     
         
     #x = Flatten()(x)
-    x = Dense(1024, activation = "relu",name='dense-1')(resnet_base)
+    x = Dense(1024, activation = "relu",name='dense-1')(resnet_base.output)
     x = Dropout(rate = 0.5)(x)
     x = Dense(512, activation = "relu",name='dense-2')(x)
     x = Dropout(rate = 0.5)(x)
