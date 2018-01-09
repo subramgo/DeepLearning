@@ -11,19 +11,19 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
             HDF5 data is loaded from the filepath
             x and y labels need to match the HDF5 file's columns
     """
-    def _generator(batchsize):
+    def _generator(dimensions,nbclasses,batchsize):
         while 1:
             with h5py.File(filepath, "r") as f:
                 filesize = len(f['train_labels'])
                 n_entries = 0
                 while n_entries < (filesize - batchsize):
                     x_train= f[x_label][n_entries : n_entries + batchsize]
-                    #x_train= x_train.astype('float32')
+                    x_train= np.reshape(x_train, dimensions).astype('float32')
 
                     y_train = f[y_label][n_entries:n_entries+batchsize]
                     # data-specific formatting should be done elsewhere later, even onecoding
                     # if dimensions is needed, can be gotten from x_train.shape
-                    y_train_onecoding = np_utils.to_categorical(y_train)
+                    y_train_onecoding = np_utils.to_categorical(y_train, nbclasses)
 
                     n_entries += batchsize
 
@@ -34,10 +34,12 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
     
     return _generator
 
-config = configs.Config()
-_filepath = config.get_section_dict('adience')['data_path']
-_adience_factory = _generatorFactory(_filepath)
-adience_train_generator = _adience_factory(batchsize=3)
+
+if __name__ == '__main__':
+    config = configs.Config()
+    _filepath = config.get_section_dict('adience')['data_path']
+    _adience_factory = _generatorFactory(_filepath)
+    adience_train_generator = _adience_factory(batchsize=3)
 
 
 
