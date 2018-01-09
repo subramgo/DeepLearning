@@ -50,7 +50,7 @@ def age_gender_model(input_shape, nb_classes):
 
     predictions = Dense(nb_classes, activation="softmax",name="softmax")(x)
     
-    model = Model(inputs = x_input, outputs = predictions)
+    model = Model(inputs = resnet_base.input, outputs = predictions)
 
     print(model.summary())
     return model
