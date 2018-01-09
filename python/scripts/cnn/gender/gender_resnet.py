@@ -31,20 +31,22 @@ np.random.seed(123)
 def age_gender_model(input_shape, nb_classes):
     """
     """
-    x_input = Input(input_shape)
 
-    resnet_base = ResNet50(include_top = False, weights = 'imagenet',input_tensor = None, input_shape = None,pooling = 'max')
+    resnet_base = ResNet50(include_top = False, weights = 'imagenet',input_tensor = None, input_shape = input_shape ,pooling = 'max')
+
+    for layer in resnet_base.layers:
+    	layer.trainable = False
     
-    resnet_output = resnet_base(x_input)
-
         
     #x = Flatten()(x)
-    x = Dense(1024, activation = "relu",name='dense-1')(resnet_output)
+    x = Dense(1024, activation = "relu",name='dense-1')(resnet_base)
     x = Dropout(rate = 0.5)(x)
     x = Dense(512, activation = "relu",name='dense-2')(x)
     x = Dropout(rate = 0.5)(x)
     x = Dense(512, activation ="relu",name='dense-3')(x)
     x = Dropout(rate = 0.5)(x)
+    x = Dense(256, activation ="relu",name='dense-4')(x)
+    x = Dropout(rate = 0.5)(x)    
 
     predictions = Dense(nb_classes, activation="softmax",name="softmax")(x)
     
