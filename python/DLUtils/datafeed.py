@@ -14,7 +14,7 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
     def _generator(dimensions,nbclasses,batchsize):
         while 1:
             with h5py.File(filepath, "r") as f:
-                filesize = len(f[y_labels])
+                filesize = len(f[y_label])
                 n_entries = 0
                 while n_entries < (filesize - batchsize):
                     x_train= f[x_label][n_entries : n_entries + batchsize]
