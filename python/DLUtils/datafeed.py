@@ -18,7 +18,7 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
                 n_entries = 0
                 while n_entries < (filesize - batchsize):
                     x_train= f[x_label][n_entries : n_entries + batchsize]
-                    x_train= np.reshape(x_train, dimensions).astype('float32')
+                    x_train= np.reshape(x_train, (batchsize, dimensions[0], dimensions[1], 3)).astype('float32')
 
                     y_train = f[y_label][n_entries:n_entries+batchsize]
                     # data-specific formatting should be done elsewhere later, even onecoding
