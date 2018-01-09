@@ -14,7 +14,7 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
     def _generator(dimensions,nbclasses,batchsize):
         while 1:
             with h5py.File(filepath, "r") as f:
-                filesize = len(f['train_labels'])
+                filesize = len(f[y_labels])
                 n_entries = 0
                 while n_entries < (filesize - batchsize):
                     x_train= f[x_label][n_entries : n_entries + batchsize]
@@ -37,7 +37,7 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
 
 if __name__ == '__main__':
     config = configs.Config()
-    _filepath = config.get_section_dict('adience')['data_path']
+    _filepath = config.get_section_dict('gender_resnet')['h5_path']
     _adience_factory = _generatorFactory(_filepath)
     adience_train_generator = _adience_factory(batchsize=3)
 
