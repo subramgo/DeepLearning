@@ -20,7 +20,7 @@ from DLUtils.MemoryReqs import get_model_memory_usage,model_memory_params
 from keras.preprocessing.image import ImageDataGenerator
 from DLUtils.configs import get_configs
 from DLUtils.h5Utils import create_h5_file
-from DLUtils.datafeed import *
+from DLUtils.datafeed import _generatorFactory
 from keras.applications import ResNet50
 
 K.set_image_data_format('channels_last')
