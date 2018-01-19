@@ -1,8 +1,11 @@
-from flask import Flask,request,render_template
+from flask import Flask,request,render_template,Response,  abort, render_template_string, send_from_directory
 import cv2
 import numpy as np 
 from DLUtils import evaluate
 import json
+import os
+from PIL import Image
+from io import StringIO
 
 predictor = evaluate.GenderClassifier()
 
@@ -51,7 +54,7 @@ def image(filename):
 @app.route('/viewimages')
 def index():
     images = []
-    for root, dirs, files in os.walk('\home\dlftp\ftp\bocacafepvm'):
+    for root, dirs, files in os.walk("/home/dlftp/ftp/bocacafepvm/"):
         for filename in [os.path.join(root, name) for name in files]:
             if not filename.endswith('.jpg'):
                 continue
@@ -70,6 +73,6 @@ def index():
                 'src': filename
             })
 
-    return render_template_string("viewimages.html", **{
+    return render_template("viewimages.html", **{
         'images': images
 })
