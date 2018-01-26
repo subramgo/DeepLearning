@@ -1,20 +1,23 @@
 from flask import Flask,request,render_template,Response,  abort, render_template_string, send_from_directory
 import cv2
 import numpy as np 
-from DLUtils import evaluate
+from DLUtils import evaluate # import GenderClassifier
 import json
 import os
 from PIL import Image
 from io import StringIO
 
 predictor = evaluate.GenderClassifier()
+face = evaluate.FaceRecog()
 
 WIDTH = 1000
 HEIGHT = 800
 
+
 app = Flask(__name__)
-app.config['DEBUG'] = False
-app.debug = False
+#app.config['DEBUG'] = False
+#app.debug = False
+
 
 @app.route('/gender', methods =['POST'])
 def gender():
@@ -24,7 +27,13 @@ def gender():
     pred_val = predictor.process(x_test=image_arr, y_test=None, batch_size=1)
     return json.dumps({'gender': pred_val})
 
-
+@app.route('/facerecog', methods =['POST'])
+def facerecog():
+    data = request.data
+    nparr = np.fromstring(data, np.uint8)
+    image_arr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    pred_val =  face.predict(image_arr)
+    return json.dumps({'person': pred_val})
 
 @app.route('/<string:page_name>/')
 def render_static(page_name):
