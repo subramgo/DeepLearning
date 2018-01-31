@@ -11,28 +11,46 @@ import dlib
 from DLUtils.align_dlib import AlignDlib
 
 
+def triplet_loss(y_true, y_pred):
+  import tensorflow as tf
+  anchor = y_pred[:,0]
+  positive = y_pred[:,1]
+  negative = y_pred[:,2]
+  #anchor, positive, negative = y_pred
+  alpha = 0.2
+  pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)))
+  neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)))
+  basic_loss = tf.add(tf.subtract(pos_dist, neg_dist), alpha)
+  loss = tf.maximum(tf.reduce_mean(basic_loss), 0.0)
+  return loss
 
 class FaceRecog:
 
   def __init__(self):
 
-    self.registry = pickle.load(open('../models/facerecog/registry.pkl','rb'))
+    print("Load registry")
+    self.registry       = pickle.load(open('../models/facerecog/registry.pkl','rb'))
     self.class_labels = pickle.load(open('../models/facerecog/class_labels.pkl','rb'))
-    self.model = load_model('../models/facerecog/final_classifier.h5')
-    self.frmodel = load_model('../models/facerecog/facerecog_2.h5')
-    self.image_w = 96
-    self.image_h = 96
-    self.detector = dlib.get_frontal_face_detector()
+    print("Load Facerecog model")
+    self.model         =   load_model('../models/facerecog/final_classifier.h5')
+    print("Extract Siamese model")
+    full_model       = load_model('../models/facerecog/facerecog_2.h5',custom_objects={'triplet_loss': triplet_loss})
+    print("Load inception model")
+    self.frmodel = full_model.get_layer('model_1')
+    self.image_w     = 96
+    self.image_h      = 96
+    self.detector      = dlib.get_frontal_face_detector()
     self.align_dlib = AlignDlib()
 
 
-    print("Loaded facerecog model")
 
   def predict(self, img):
     dets, scores, idx = self.detector.run(img, 1, -1)
+    crop_dim =(self.image_w, self.image_h)
+    aligned = None
     if len(dets) == 1:
      if idx[0] == 0.0 or idx[0] == 3.0 or idx[0] == 4.0:
-        aligned = align_dlib.align(crop_dim, image)
+        aligned = self.align_dlib.align(crop_dim, img)
 
     if aligned is None:
         return 'Unknown'
@@ -41,19 +59,16 @@ class FaceRecog:
     ps = self.model.predict(encoding)
     p = np.argmax(ps, axis = 1)
     prob = ps[0][p]
-    if prob > 0.99:
+    if prob > 0.999:
       predicted_name = self.class_labels[p[0]]
     else:
       predicted_name = 'Unknown'    
+    if predicted_name == 'Others':
+        predicted_name = 'Unknown'
+
     return predicted_name
 
   def image_decode(self,image):
-
-    #image = self.centeredCrop(image, self.image_w, self.image_h)
-    image = cv2.resize(image, (self.image_w, self.image_h)) 
-
-    image = image[...,::-1]
-    image = np.around(np.transpose(image, (0,1,2))/255.0, decimals=12)
     resized = np.expand_dims(image, axis =0)
     vector = self.frmodel.predict_on_batch(resized)
     return vector
