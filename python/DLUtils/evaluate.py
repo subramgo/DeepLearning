@@ -7,6 +7,8 @@ from keras.utils import np_utils
 import cv2
 from DLUtils.configs import get_configs
 import pickle
+import dlib
+from DLUtils.align_dlib import AlignDlib
 
 
 
@@ -16,30 +18,40 @@ class FaceRecog:
 
     self.registry = pickle.load(open('../models/facerecog/registry.pkl','rb'))
     self.class_labels = pickle.load(open('../models/facerecog/class_labels.pkl','rb'))
-
-
     self.model = load_model('../models/facerecog/final_classifier.h5')
-
-    self.frmodel = load_model('../models/facerecog/facerecog_1.h5')
-
+    self.frmodel = load_model('../models/facerecog/facerecog_2.h5')
     self.image_w = 96
     self.image_h = 96
+    self.detector = dlib.get_frontal_face_detector()
+    self.align_dlib = AlignDlib()
+
+
     print("Loaded facerecog model")
 
   def predict(self, img):
-    encoding = self.image_decode(img)
+    dets, scores, idx = self.detector.run(img, 1, -1)
+    if len(dets) == 1:
+     if idx[0] == 0.0 or idx[0] == 3.0 or idx[0] == 4.0:
+        aligned = align_dlib.align(crop_dim, image)
+
+    if aligned is None:
+        return 'Unknown'
+        
+    encoding = self.image_decode(aligned)
     ps = self.model.predict(encoding)
     p = np.argmax(ps, axis = 1)
     prob = ps[0][p]
-    if prob > 0.90:
+    if prob > 0.99:
       predicted_name = self.class_labels[p[0]]
     else:
-      predicted_name = 'Unknown'
+      predicted_name = 'Unknown'    
     return predicted_name
 
   def image_decode(self,image):
 
-    image = self.centeredCrop(image, self.image_w, self.image_h)
+    #image = self.centeredCrop(image, self.image_w, self.image_h)
+    image = cv2.resize(image, (self.image_w, self.image_h)) 
+
     image = image[...,::-1]
     image = np.around(np.transpose(image, (0,1,2))/255.0, decimals=12)
     resized = np.expand_dims(image, axis =0)

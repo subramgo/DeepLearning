@@ -31,7 +31,7 @@ def gender():
 def facerecog():
     data = request.data
     nparr = np.fromstring(data, np.uint8)
-    image_arr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    image_arr = cv2.imdecode(nparr,)
     pred_val =  face.predict(image_arr)
     return json.dumps({'person': pred_val})
 
