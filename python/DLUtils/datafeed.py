@@ -38,9 +38,20 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
 if __name__ == '__main__':
     config = configs.Config()
     _filepath = config.get_section_dict('gender_resnet')['h5_path']
-    _adience_factory = _generatorFactory(_filepath)
-    adience_train_generator = _adience_factory(batchsize=3)
+    _factory = _generatorFactory(_filepath)
+    adience_train_generator = _factory(batchsize=3)
 
 
+    #######################################
+    ###     Adience Data Generators     ###
+    #######################################
+    _filepath = config.get_section_dict('adience')['data_path']
 
+
+    _adience_train_factory = _generatorFactory(_filepath)
+    adience_train_generator = _adience_train_factory(batchsize=3)
+
+
+    _adience_eval_factory = _generatorFactory(_filepath,x_label='eval_images',y_label='eval_labels')
+    adience_eval_generator = _adience_eval_factory(batchsize=3)
 
