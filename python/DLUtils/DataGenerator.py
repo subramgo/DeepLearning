@@ -2,6 +2,7 @@ import numpy as np
 import h5py
 from keras.utils import np_utils
 
+""" Deprecated - Use DLUtils.datafeed instead """
 
 def _generator(x_label, y_label, filepath,dimensions):
 	while 1:

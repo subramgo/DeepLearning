@@ -1,5 +1,7 @@
 import numpy as np
 import h5py
+import cv2
+import sys
 from keras.utils import np_utils
 
 from DLUtils import configs
@@ -33,6 +35,27 @@ def _generatorFactory(filepath,x_label='train_images',y_label='train_labels'):
                 f.close()
     
     return _generator
+
+
+def cafe_stream():
+    """ return stream object """
+    uri = "rtsp://10.38.5.145/ufirststream/"
+    cap = cv2.VideoCapture(uri)
+
+    try:
+        return cap
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
+
+
+class FaceDetection
+    """ training data to learn face detection """
+    
+    #TODO
+    pass 
+
+
 
 
 if __name__ == '__main__':

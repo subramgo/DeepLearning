@@ -18,6 +18,35 @@ pip install labelme
 
 # Raspberry Pi and Docker
 
+## Python+Ubuntu+RaspberryPi Packages
+
+Don't run `pip install -r requirements.txt` as it will take forever on the large packages.
+
+### Python 3
+  * PyQT must be installed by `apt`
+    * `sudo apt install build-essential python3-dev libqt4-dev`
+
+### H5PY
+  * Install `libhdf5-dev` first!
+    * `sudo apt install libhdf5-dev -y`
+  * Takes a long time to compile and install
+    * try verbose mode `pip3 install h5py -vvv`
+
+### OpenCV
+
+  1. Use PIP
+    * `pip3 install opencv-python`
+  2. Use APT
+    * `sudo apt install python-opencv`
+  3. [Build from source](https://opencv.org)
+
+### Tensorflow
+
+  * [Build it from source](https://www.tensorflow.org/install/install_sources)
+  * Use [this build](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
+    * change 'cp34-cp34m' to read 'cp35-cp35m'
+
+
 ## Raspberry Pi OS
 
 ### SDHC Preparation
@@ -54,22 +83,6 @@ Install an OS image using `etcher`
   * [Homepage](https://pjreddie.com/darknet/yolo/)
   * [TinyYOLO Keras-friendly H5 File](https://drive.google.com/open?id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5)
 
-### OpenCV
-
-Install OpenCV and the `requirements.txt`.
-
-  1. Use PIP
-    * `pip3 install opencv-python`
-  2. Use APT
-    * `sudo apt install python-opencv`
-  3. Build from source
-    * use https://opencv.org
-
-### Tensorflow
-
-  * Build it from source also
-  * Use [this build](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
-    * change 'cp34-cp34m' to read 'cp35-cp35m'
 
 
 # Code
