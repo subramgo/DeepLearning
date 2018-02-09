@@ -115,3 +115,63 @@ Scalable scripts.
 ## Notebooks
 
 Exploratory & development iPython notebooks.
+
+# Raspberry Pi Troubleshooting
+
+## Custom Pi Builds
+
+### SDHC Preparation
+
+Use a high-speed-rated SD card if rapid writes are needed, such as "10" or greater as used in GoPro.
+Easiest & reliable way to install an OS image using `etcher`.
+
+  * [openSUSE Linux](https://en.opensuse.org/HCL:Raspberry_Pi3)
+    * 64-bit runtime
+  * [Ubuntu Mate](https://ubuntu-mate.org/raspberry-pi/)
+    - current Ubuntu desktop with `apt` support
+    - preconfigured for `armhf` base packages
+    * only 32-bit runtime
+  * [Ubuntu Desktop](https://www.ubuntu.com/download)
+
+
+## Troubleshooting
+
+Don't run `pip install -r requirements.txt` on a Pi as it will choke on the large packages Tensorflow, Keras, H5PY, OpenCV.
+
+### PyQT
+
+  * Try installing by `apt`
+    * `sudo apt install build-essential python3-dev libqt4-dev`
+
+### H5PY
+
+  * apt install
+    * `sudo apt install python3-h5py`
+  * pip install
+    1. Install `libhdf5-dev` first
+      * `sudo apt install libhdf5-dev -y`
+    2. Takes a long time to compile and install
+      * try verbose mode `pip3 install h5py -vvv`
+
+### OpenCV
+
+  * Use PIP
+    * `pip3 install opencv-python`
+  * [Build from source](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
+      1. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
+      2. check out same release version of each
+      3. build opencv
+          1. `cd opencv && mkdir build && cd build`
+          2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
+          3. `make -j4`
+          4. `sudo make install`
+          5. `sudo ldconfig`
+
+### Tensorflow
+
+  * [Easy install](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
+  * [Build Tensorflow from source](https://www.tensorflow.org/install/install_sources)
+  * [Cross-Compile](https://petewarden.com/2017/08/20/cross-compiling-tensorflow-for-the-raspberry-pi/)
+    1. get the [latest nightly build](http://ci.tensorflow.org/view/Nightly/job/nightly-pi-zero-python3/lastSuccessfulBuild/artifact/output-artifacts/)
+    2. change 'cp34' to read 'cp35'
+    3. `sudo pip3 install tensorflow-...`
