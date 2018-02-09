@@ -41,16 +41,15 @@ pip install labelme
           * `sudo apt install libhdf5-dev -y`
       * Takes a long time to compile and install
           * try verbose mode `sudo pip3 install h5py -vvv`
-  7. OpenCV
-      * Use PIP
-          * `pip3 install opencv-python`
-      * [Build from source](https://opencv.org)
-          1. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
-          2. `make -j4`
-          3. `sudo make install`
-          4. `sudo ldconfig`
-      * [source1](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
-      * [source2](http://cyaninfinite.com/tutorials/installing-opencv-in-ubuntu-for-python-3/)
+  7. [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
+      1. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
+      2. check out same release version of each
+      3. build opencv
+          1. `cd opencv && mkdir build && cd build`
+          2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
+          3. `make -j4`
+          4. `sudo make install`
+          5. `sudo ldconfig`
 
 
 ## Install Docker
