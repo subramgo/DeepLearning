@@ -16,9 +16,7 @@ brew install qt qt4
 brew install pyqt  # qt4 is deprecated
 pip install labelme
 
-# Raspberry Pi and Docker
-
-## Raspberry Pi OS
+# Raspberry Pi
 
 ### OS Prep
 
@@ -32,17 +30,16 @@ pip install labelme
 
 ### Important Packages
 
-  3. [Tensorflow install](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
+  3. Tensorflow [via](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
+      1. `sudo apt-get install python3-pip python3-dev`
+      2. `wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.1.0/tensorflow-1.1.0-cp34-cp34m-linux_armv7l.whl`
+      3. `mv tensorflow-1.1.0-cp34-cp34m-linux_armv7l.whl tensorflow-1.1.0-cp35-cp35m-linux_armv7l.whl`
+      4. `sudo pip3 install tensorflow-1.1.0-cp35-cp35m-linux_armv7l.whl`
+      5. `sudo pip3 install mock`
   4. `sudo pip3 install keras pyyaml`
       * if keras doesn't install correctly, use `apt`
-  5. `sudo apt install python3-scipy` 
-      * for some reason scipy wouldn't install via pip
   6. H5PY
-      * Install `libhdf5-dev` first
-          * `sudo apt install libhdf5-dev -y`
-          * also look for `libhdf5-cpp` headers for building OpenCV later
-      * Takes a long time to compile and install
-          * try verbose mode `sudo pip3 install h5py -vvv`
+      * `sudo apt install libhdf5-dev python3-h5py python3-scipy -y`
   7. [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
       1. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
       2. check out same release version of each
@@ -53,12 +50,6 @@ pip install labelme
               * if it appears to freeze or stall, don't panic. be patient. When patience runs out, hit CTRL-C to cancel and resume build with a `make`
           4. `sudo make install`
           5. `sudo ldconfig`
-
-opencv attempts:
-  * `sudo make` instead of vanilla `make`
-  * manually install `libhdf5-cpp*` stuff
-  * "added, INCLUDE_DIRS += /usr/include/hdf5/serial/, in the Makefile to set the proper location for the include files."
-  * https://github.com/NVIDIA/DIGITS/issues/156#issuecomment-114776706
 
 
 ## Install Docker

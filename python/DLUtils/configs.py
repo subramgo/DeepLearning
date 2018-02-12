@@ -12,7 +12,6 @@ from ast import literal_eval
 
 class Config:
     def __init__(self):
-        self.default_root_path = '../..'
         self.my_path = os.path.abspath(os.path.dirname(__file__))
         self.config_path = '../settings/models.ini'
 
@@ -32,10 +31,14 @@ class Config:
 
         return {k:self._eval(val) for k,val in dict(self._config[section]).items()}
 
-    def _resolve_paths(self,path):
+    def resolve_paths(self,path):
         """ Check for paths relative to the package installation """
         if os.path.isabs(path):
-            _test = os.path.join(self.my_path,self.default_root_path,path[1:])
+            _test = os.path.join(self.my_path,'../..',path[1:])
+            if os.path.exists(os.path.abspath(_test)):
+                path = os.path.abspath(_test)
+
+            _test = os.path.join(self.my_path,'..',path[1:])
             if os.path.exists(os.path.abspath(_test)):
                 path = os.path.abspath(_test)
 
@@ -50,7 +53,7 @@ class Config:
         except NameError:
             basestring = str
         if isinstance(value,basestring):
-            value = self._resolve_paths(value)
+            value = self.resolve_paths(value)
         return value
 
 def get_configs(section_name):

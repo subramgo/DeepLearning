@@ -11,6 +11,8 @@ from keras.models import load_model
 from PIL import Image, ImageDraw, ImageFont
 
 from DLUtils.keras_yolo import yolo_eval, yolo_head
+from DLUtils import cellar
+from DLUtils import datafeed
 
 import scipy.misc
 
@@ -23,11 +25,8 @@ class_names = [
     "pottedplant", "sheep", "sofa", "train", "tvmonitor"
 ]
 
-model_path = os.path.expanduser('../models/yolo/tiny_yolo.h5')
-test_path = os.path.expanduser('../data/facedetection/input/')
-output_path = os.path.expanduser('../data/facedetection/output/')
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-yolo_model = load_model(model_path)
+yolo_model = cellar.tiny_yolo()
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
@@ -37,7 +36,7 @@ assert model_output_channels == num_anchors * (num_classes + 5), \
     'Mismatch between model and given anchor and class sizes. ' \
     'Specify matching anchors and classes with --anchors_path and ' \
     '--classes_path flags.'
-print('{} model, anchors, and classes loaded.'.format(model_path))
+print('Tiny Yolo model, anchors, and classes loaded.')
 
 # Check if model is fully convolutional, assuming channel last order.
 model_image_size = yolo_model.layers[0].input_shape[1:3]
@@ -74,7 +73,6 @@ def _main(image):
     #sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
 
 
-    #yolo_model = load_model(model_path)
 
     # Verify model, anchors, and classes are compatible
 
@@ -143,7 +141,7 @@ def _main(image):
         draw.text(text_origin, label, fill=(0, 0, 0), font=font)
         del draw
 
-    return image 
+    return image
 
 
 if __name__ == "__main__":
@@ -161,7 +159,7 @@ if __name__ == "__main__":
 			frame = _main(frame)
 			cv2.imshow('Video', np.asarray(frame))
 
-		if cv2.waitKey(24) & 0xFF == ord('q'):		
+		if cv2.waitKey(24) & 0xFF == ord('q'):
 			break
 
 
