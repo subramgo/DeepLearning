@@ -3,15 +3,11 @@ from keras.models import load_model
 
 from DLUtils import configs
 
-def tiny_yolo():
-    """ return Tiny YOLO model loaded from H5 """
-    config = configs.Config()
-    return load_model(config.resolve_paths('/cellar/tiny_yolo.h5'))
-
 def load_h5(cellar_path):
     """ return hdf5 model loaded from cellar path """
     if not cellar_path[0] == '/':
         cellar_path = '/'+cellar+path
+
     config = configs.Config()
     return load_model(config.resolve_paths(cellar_path))
 

@@ -10,8 +10,7 @@ from keras import backend as K
 from keras.models import load_model
 from PIL import Image, ImageDraw, ImageFont
 
-from DLUtils.keras_yolo import yolo_eval, yolo_head
-from DLUtils import cellar
+from DLUtils.cellar import yolo
 from DLUtils import datafeed
 
 import scipy.misc
@@ -26,7 +25,7 @@ class_names = [
 ]
 
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-yolo_model = cellar.tiny_yolo()
+yolo_model = yolo.pretrained_tiny_yolo()
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
@@ -58,9 +57,9 @@ iou_threshold = 0.5
 
 # Generate output tensor targets for filtered bounding boxes.
 # TODO: Wrap these backend operations with Keras layers.
-yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
+yolo_outputs = yolo.yolo_head(yolo_model.output, anchors, len(class_names))
 input_image_shape = K.placeholder(shape=(2, ))
-boxes, scores, classes = yolo_eval(
+boxes, scores, classes = yolo.yolo_eval(
     yolo_outputs,
     input_image_shape,
     score_threshold=score_threshold,
