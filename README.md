@@ -24,8 +24,9 @@ pip install labelme
 
   1. Use 64-bit Raspbian. 
   2. Python 3.4.2 makes the other installs easier/possible.
+  3. `sudo apt purge wolfram-engine && sudo apt autoremove`
   3. `sudo apt update && sudo apt upgrade && sudo rpi-update && sudo reboot`
-  4. `sudo apt install build-essential screen vim git python3-dev cmake pkg-config libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libgtk2.0-dev libatlas-base-dev gfortran`
+  4. `sudo apt install build-essential screen vim git python3-dev cmake pkg-config libatlas-base-dev`
   5. `sudo apt update && sudo apt upgrade -y`
   6. `sudo pip3 install numpy`
 
@@ -39,6 +40,7 @@ pip install labelme
   6. H5PY
       * Install `libhdf5-dev` first
           * `sudo apt install libhdf5-dev -y`
+          * also look for `libhdf5-cpp` headers for building OpenCV later
       * Takes a long time to compile and install
           * try verbose mode `sudo pip3 install h5py -vvv`
   7. [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
@@ -47,9 +49,16 @@ pip install labelme
       3. build opencv
           1. `cd opencv && mkdir build && cd build`
           2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
-          3. `make -j4`
+          3. `make -j3`
+              * if it appears to freeze or stall, don't panic. be patient. When patience runs out, hit CTRL-C to cancel and resume build with a `make`
           4. `sudo make install`
           5. `sudo ldconfig`
+
+opencv attempts:
+  * `sudo make` instead of vanilla `make`
+  * manually install `libhdf5-cpp*` stuff
+  * "added, INCLUDE_DIRS += /usr/include/hdf5/serial/, in the Makefile to set the proper location for the include files."
+  * https://github.com/NVIDIA/DIGITS/issues/156#issuecomment-114776706
 
 
 ## Install Docker
