@@ -30,11 +30,10 @@ pip install labelme
 
 ### Important Packages
 
-  3. Tensorflow [via](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
+  3. [Tensorflow](https://github.com/samjabrahams/tensorflow-on-raspberry-pi/blob/master/GUIDE.md)
       1. `sudo apt-get install python3-pip python3-dev`
-      2. `wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.1.0/tensorflow-1.1.0-cp34-cp34m-linux_armv7l.whl`
-      3. `mv tensorflow-1.1.0-cp34-cp34m-linux_armv7l.whl tensorflow-1.1.0-cp35-cp35m-linux_armv7l.whl`
-      4. `sudo pip3 install tensorflow-1.1.0-cp35-cp35m-linux_armv7l.whl`
+      2. build `bazel` from source
+      3. build `tensorflow` using `bazel`
       5. `sudo pip3 install mock`
   4. `sudo pip3 install keras pyyaml`
       * if keras doesn't install correctly, use `apt`

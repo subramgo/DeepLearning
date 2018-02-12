@@ -49,7 +49,7 @@ def cafe_stream():
         cv2.destroyAllWindows()
 
 
-class FaceDetection
+class FaceDetection:
     """ training data to learn face detection """
     
     #TODO
