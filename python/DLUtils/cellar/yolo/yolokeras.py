@@ -4,7 +4,6 @@ import numpy as np
 from keras import backend as K
 from keras.models import load_model
 import tensorflow as tf
-
 from DLUtils import configs
 
 def pretrained_tiny_yolo():
@@ -12,15 +11,6 @@ def pretrained_tiny_yolo():
     config = configs.Config()
     return load_model(config.resolve_paths('/cellar/tiny_yolo.h5'))
 
-
-voc_anchors = np.array(
-    [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
-
-voc_classes = [
-    "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
-    "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
-    "pottedplant", "sheep", "sofa", "train", "tvmonitor"
-]
 
 def yolo_head(feats, anchors, num_classes):
     """Convert final layer features to bounding box parameters.
