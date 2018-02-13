@@ -152,7 +152,9 @@ if __name__ == "__main__":
 		# Capture frame-by-frame
 		ret, frame = video_capture.read()
 
-		cv2.imshow('Video', frame)
+        print(ret)
+        if ret:
+    		cv2.imshow('Video', frame)
 		if frame is not None:
 			frame = scipy.misc.toimage(frame)
 			frame = _main(frame)

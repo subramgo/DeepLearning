@@ -1,5 +1,5 @@
 """
-Preprocess and Load Adience Face Benchmark data into h4py datastore.
+Preprocess and Load Adience Face Benchmark data into h5py datastore.
 
 Adience dataset was downloaded from 
 http://www.cslab.openu.ac.il/personal/Hassner/adiencedb/AdienceBenchmarkOfUnfilteredFacesForGenderAndAgeClassification/
@@ -14,7 +14,9 @@ The script does the following
 
 """
 
+# TODO create easy accessor/generator functions for this data set (`split_by_gender`?)
 
+# TODO parameterize paths for file creation
 def create_hdf5():
     import glob
     import pandas as pd

@@ -30,43 +30,63 @@ pip install labelme
 
 ### Important Packages
 
-  3. [Tensorflow](https://github.com/samjabrahams/tensorflow-on-raspberry-pi/blob/master/GUIDE.md)
-      1. `sudo apt-get install python3-pip python3-dev`
-      2. build `bazel` from source
-      3. build `tensorflow` using `bazel`
-      5. `sudo pip3 install mock`
-  4. `sudo pip3 install keras pyyaml`
-      * if keras doesn't install correctly, use `apt`
-  6. H5PY
-      * `sudo apt install libhdf5-dev python3-h5py python3-scipy -y`
-  7. [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
-      1. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
-      2. check out same release version of each
-      3. build opencv
-          1. `cd opencv && mkdir build && cd build`
-          2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
-          3. `make -j3`
-              * if it appears to freeze or stall, don't panic. be patient. When patience runs out, hit CTRL-C to cancel and resume build with a `make`
-          4. `sudo make install`
-          5. `sudo ldconfig`
+Don't run `pip install -r requirements.txt` on a Pi as it will choke on the large packages (Tensorflow, Keras, H5PY, OpenCV).
 
+#### H5PY
 
-## Install Docker
-### Mac
+    sudo apt install libhdf5-dev python3-h5py python3-scipy -y
 
-    brew install docker
+#### [Tensorflow](https://github.com/samjabrahams/tensorflow-on-raspberry-pi/blob/master/GUIDE.md)
 
+##### Install Nightly Build
 
-### Ubuntu
+  1. `wget http://ci.tensorflow.org/view/Nightly/job/nightly-pi-python3/39/artifact/output-artifacts/tensorflow-1.4.0-cp34-none-any.whl`
+  2. `pip3 install tensorflow-...`
 
-    sudo apt install docker.io
+##### Build from Source
+
+  1. `sudo apt-get install python3-pip python3-dev`
+  2. [Increase Raspbian swap space](https://www.bitpi.co/2015/02/11/how-to-change-raspberry-pis-swapfile-size-on-rasbian/)
+    1. /etc/dphys-swapfile -> `CONF_SWAPFILE=1024`
+    2. `sudo /etc/init.d/dphys-swapfile stop; sudo /etc/init.d/dphys-swapfile start`
+  3. build `bazel` from source 
+  4. build `tensorflow` using `bazel`
+  5. `sudo pip3 install mock`
+
+#### Keras
+
+    sudo pip3 install keras pyyaml
+  * if keras doesn't install correctly, use `apt`
+
+#### [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
+  1. `sudo apt install libgtk2.0-dev and pkg-config -y` GTK2 provides critical functions
+  2. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
+  3. check out same release version of each
+  4. build opencv
+      1. `cd opencv && mkdir build && cd build`
+      2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
+      3. `make -j3`
+          * if it appears to freeze or stall, don't panic. be patient. When patience runs out, hit CTRL-C to cancel and resume build with a `make`
+      4. `sudo make install`
+      5. `sudo ldconfig`
+  5. https://www.pyimagesearch.com/2015/03/30/accessing-the-raspberry-pi-camera-with-opencv-and-python/ connect picamera to OpenCV
+
+  sudo apt install imagemagick
+
+  pip3 install wand
+
+### PyQT
+
+  * Try installing by `apt`
+    * `sudo apt install build-essential python3-dev libqt4-dev`
+
 
 
 ## Set up Pi Camera
 
-[Via blog](https://larrylisky.com/2016/11/24/enabling-raspberry-pi-camera-v2-under-ubuntu-mate/)
-
-    sudo apt-get install raspi-config rpi-update
+  * [Quick Start](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera)
+  * [Basic Docs](https://www.raspberrypi.org/documentation/usage/camera/python/README.md)
+  * [Full Docs](http://picamera.readthedocs.io/en/release-1.13/recipes2.html)
 
 ## TinyYOLO
 
@@ -132,45 +152,3 @@ Easiest & reliable way to install an OS image using `etcher`.
     * only 32-bit runtime
   * [Ubuntu Desktop](https://www.ubuntu.com/download)
 
-
-## Troubleshooting
-
-Don't run `pip install -r requirements.txt` on a Pi as it will choke on the large packages Tensorflow, Keras, H5PY, OpenCV.
-
-### PyQT
-
-  * Try installing by `apt`
-    * `sudo apt install build-essential python3-dev libqt4-dev`
-
-### H5PY
-
-  * apt install
-    * `sudo apt install python3-h5py`
-  * pip install
-    1. Install `libhdf5-dev` first
-      * `sudo apt install libhdf5-dev -y`
-    2. Takes a long time to compile and install
-      * try verbose mode `pip3 install h5py -vvv`
-
-### OpenCV
-
-  * Use PIP
-    * `pip3 install opencv-python`
-  * [Build from source](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
-      1. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
-      2. check out same release version of each
-      3. build opencv
-          1. `cd opencv && mkdir build && cd build`
-          2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
-          3. `make -j4`
-          4. `sudo make install`
-          5. `sudo ldconfig`
-
-### Tensorflow
-
-  * [Easy install](https://github.com/samjabrahams/tensorflow-on-raspberry-pi)
-  * [Build Tensorflow from source](https://www.tensorflow.org/install/install_sources)
-  * [Cross-Compile](https://petewarden.com/2017/08/20/cross-compiling-tensorflow-for-the-raspberry-pi/)
-    1. get the [latest nightly build](http://ci.tensorflow.org/view/Nightly/job/nightly-pi-zero-python3/lastSuccessfulBuild/artifact/output-artifacts/)
-    2. change 'cp34' to read 'cp35'
-    3. `sudo pip3 install tensorflow-...`

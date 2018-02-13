@@ -1,8 +1,9 @@
 """ Implementation of the YOLO network using Keras """
+import numpy as np
 
 from keras import backend as K
-import numpy as np
 from keras.models import load_model
+import tensorflow as tf
 
 from DLUtils import configs
 
