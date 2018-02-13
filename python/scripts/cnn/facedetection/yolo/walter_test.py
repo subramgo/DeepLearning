@@ -24,7 +24,6 @@ class_names = [
 ]
 
 model_path = os.path.expanduser('../models/yolo/tiny_yolo.h5')
-
 test_path = os.path.expanduser('../data/facedetection/input/')
 output_path = os.path.expanduser('../data/facedetection/output/')
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
@@ -68,7 +67,7 @@ boxes, scores, classes = yolo_eval(
     score_threshold=score_threshold,
     iou_threshold=iou_threshold)
 
-def _main(image):
+def _main(image,framecount):
 
 
     #print(image.shape)
@@ -111,7 +110,10 @@ def _main(image):
         size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
     thickness = (image.size[0] + image.size[1]) // 300
 
+    found = False
+
     for i, c in reversed(list(enumerate(out_classes))):
+        found = True
         predicted_class = class_names[c]
         box = out_boxes[i]
         score = out_scores[i]
@@ -126,7 +128,7 @@ def _main(image):
         left = max(0, np.floor(left + 0.5).astype('int32'))
         bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
         right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-        print(label, (left, top), (right, bottom))
+        print(framecount,label, (left, top), (right, bottom))
 
         if top - label_size[1] >= 0:
             text_origin = np.array([left, top - label_size[1]])
@@ -144,30 +146,51 @@ def _main(image):
         draw.text(text_origin, label, fill=(0, 0, 0), font=font)
         del draw
 
-    return image 
+    return image , found
 
 
 if __name__ == "__main__":
 
 
-	video_capture = cv2.VideoCapture(0)
+    video_file = '/Users/gsubramanian/Downloads/Walter/VEH16IP-DH77-64-80_12_20_0_8_2_2018.2.mp4'
+    
 
-	while True:
-		# Capture frame-by-frame
-		ret, frame = video_capture.read()
-
-		cv2.imshow('Video', frame)
-		if frame is not None:
-			frame = scipy.misc.toimage(frame)
-			frame = _main(frame)
-			cv2.imshow('Image', np.asarray(frame))
-
-		          if cv2.waitKey(24) & 0xFF == ord('q'):		
-			     break
+    #fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    #out = cv2.VideoWriter('/Users/gsubramanian/Downloads/Walter/VEH16IP-DH77-64-80_12_20_0_8_2_2018_output.mp4',fourcc, 20.0, (640,480))
 
 
 
 
-	video_capture.release()
-	cv2.destroyAllWindows()
-	sess.close()
+    video_capture = cv2.VideoCapture(video_file)
+    frame_count = 0
+
+    tot_frames = length = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    print("Total Frames {}".format(tot_frames))
+
+    while True:
+        ret, frame = video_capture.read()
+        if not ret:
+            break
+        frame_count+=1
+        if frame_count%50 == 0:
+            print("Processed {} frames".format(frame_count))
+        #cv2.imshow('Video', frame)
+        if frame is not None:
+            frame = scipy.misc.toimage(frame)
+            frame, Found = _main(frame,frame_count)
+            frame = np.asarray(frame)
+            #cv2.imshow('Video', np.asarray(frame))
+            if Found:
+                cv2.imwrite('/Users/gsubramanian/Downloads/Walter/frame_' + str(frame_count) + '.jpg', frame)
+            #out.write(np.asarray(frame))
+
+        if cv2.waitKey(24) & 0xFF == ord('q'):		
+            break
+
+
+
+
+    video_capture.release()
+    #out.release()
+    cv2.destroyAllWindows()
+    sess.close()

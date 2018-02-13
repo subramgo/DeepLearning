@@ -28,10 +28,10 @@ def image_decode(filepath, model):
   return vector
 
 print("Load Registry")
-registry = pickle.load(open('../models/facerecog/registry.pkl','rb'))
-class_labels = pickle.load(open('../models/facerecog/class_labels.pkl','rb'))
+registry = pickle.load(open('../models/facerecog/registry_100P.pkl','rb'))
+class_labels = pickle.load(open('../models/facerecog/class_labels_100P.pkl','rb'))
 print("Load Final Face Recog Model")
-model = load_model('../models/facerecog/final_classifier.h5')
+model = load_model('../models/facerecog/final_classifier_100P.h5')
 print("Loading Full Siamese Model....")
 full_model = load_model('../models/facerecog/facerecog_2.h5',custom_objects={'triplet_loss': triplet_loss})
 print("Extract inception model")
@@ -58,7 +58,17 @@ for entry in os.scandir(register_path):
 file_list = glob.glob(test_path + '/*.jpg')
 print(file_list)
 for img in file_list:
-  encoding = image_decode(img, inception_model)
+  encs = []
+  for i in range(3):
+    encoding = image_decode(img, inception_model)
+    encs.append(encoding[0])
+  encs =np.asarray(encs)
+  print(encs.shape)
+  encoding = np.mean(encs, axis=0)
+  print(encoding.shape)
+  encoding =np.expand_dims(encoding,axis=0)
+  print(encoding.shape)
+
   if encoding is None:
     print('Cant get encoding')
     continue
@@ -68,7 +78,7 @@ for img in file_list:
   p = np.argmax(ps, axis = 1)
   prob = ps[0][p]
   print(prob, class_labels[p[0]])
-  if prob > 0.98:
+  if prob > 0.999:
     predicted_name = class_labels[p[0]]
   else:
     predicted_name = 'Others'
@@ -81,10 +91,12 @@ for img in file_list:
   else:
     p_image = cv2.imread(original_faces['General'])
 
-  g_image = cv2.resize(g_image, (150,150))
 
-  p_image = cv2.resize(p_image, (150,150))
 
-  numpy_horizontal = np.hstack((g_image, p_image))
-  cv2.imshow('Given            vs           Registry', numpy_horizontal)
-  cv2.waitKey()
+  #g_image = cv2.resize(g_image, (96,96))
+  #p_image = cv2.resize(p_image, (96,96))
+
+  #numpy_horizontal = np.hstack((g_image, p_image))
+
+  #cv2.imshow('Given            vs           Registry', numpy_horizontal)
+  #cv2.waitKey()

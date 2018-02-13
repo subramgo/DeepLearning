@@ -82,12 +82,16 @@ def simple_test(image_path):
 	box_class_prob = p_resh[:,:,:,:,5:]
 	box_class_prob = box_class_prob.reshape(1,13,13,5,20)
 
+	print(box_class_prob[0,0,0,0])
+
 	# Filter the boxes
-	threshold = 0.6
+	threshold = 0.9
 	box_scores = np.multiply(box_confidence, box_class_prob)
 	print(box_scores.shape)
 	box_class = K.argmax(box_scores, axis =-1)
 	box_class_scores = K.max(box_scores, axis=-1)
+
+
 	# Filtering mask
 	filtering_mask = K.greater_equal(box_class_scores, threshold)
 	with K.get_session() as test:
@@ -101,7 +105,7 @@ def simple_test(image_path):
 
 
 		max_boxes = 5
-		iou_threshold = 0.6
+		iou_threshold = 0.4
 
 
 		max_boxes_tensor = K.variable(max_boxes, dtype='int32')     # tensor to be used in tf.image.non_max_suppression()
@@ -123,7 +127,8 @@ def simple_test(image_path):
 		image_dims = K.reshape(image_dims, [1, 4])
 		boxes = boxes * image_dims
 
-		print(boxes.eval())
+		print(boxes)
+		print(scores)
 #	image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
 #	image = cv2.rectangle(image, (x, y), (x + window_size[0], y + window_size[1]), (0, 255, 0), 2)

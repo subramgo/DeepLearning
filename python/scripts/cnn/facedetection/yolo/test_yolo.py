@@ -23,11 +23,12 @@ class_names = [
     "pottedplant", "sheep", "sofa", "train", "tvmonitor"
 ]
 
+model_path = os.path.expanduser('../models/yolo/tiny_yolo.h5')
+test_path = os.path.expanduser('../data/facedetection/input/')
+output_path = os.path.expanduser('../data/facedetection/output/')
 
 def _main():
-    model_path = os.path.expanduser('../models/yolo/tiny_yolo.h5')
-    test_path = os.path.expanduser('../data/facedetection/input/')
-    output_path = os.path.expanduser('../data/facedetection/output/')
+
 
 
     sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
@@ -152,4 +153,5 @@ def _main():
 
 
 if __name__ == '__main__':
+    
     _main()
