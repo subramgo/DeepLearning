@@ -11,7 +11,7 @@ from ast import literal_eval as _literal_eval
 
 class Config:
     def __init__(self):
-        self.my_path = _os.path.abspath(os.path.dirname(__file__))
+        self.my_path = _os.path.abspath(_os.path.dirname(__file__))
         self.config_path = '../settings/models.ini'
 
         path = _os.path.join(self.my_path, self.config_path)
@@ -34,11 +34,11 @@ class Config:
         """ Check for paths relative to the package installation """
         if _os.path.isabs(path):
             _test = _os.path.join(self.my_path,'../..',path[1:])
-            if _os.path.exists(os.path.abspath(_test)):
+            if _os.path.exists(_os.path.abspath(_test)):
                 path = _os.path.abspath(_test)
 
             _test = _os.path.join(self.my_path,'..',path[1:])
-            if _os.path.exists(os.path.abspath(_test)):
+            if _os.path.exists(_os.path.abspath(_test)):
                 path = _os.path.abspath(_test)
 
         return path

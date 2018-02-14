@@ -7,7 +7,7 @@ import tensorflow as tf
 from DLUtils import configs
 
 def pretrained_tiny_yolo():
-    """ return Tiny YOLO model loaded from H5 """
+    """ fetch Tiny-YOLO model, implemented in Keras, loaded from H5 """
     config = configs.Config()
     return load_model(config.resolve_paths('/cellar/tiny_yolo.h5'))
 
