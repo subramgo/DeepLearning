@@ -66,22 +66,19 @@ boxes, scores, classes = yolo.yolo_eval(
     iou_threshold=iou_threshold)
 
 def _main(image):
-
+    verbose=True
 
     #print(image.shape)
     #sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-
-
-
     # Verify model, anchors, and classes are compatible
 
-
+    if verbose: print("start of main()")
 
     if is_fixed_size:  # TODO: When resizing we can use minibatch input.
-            resized_image = image.resize(
-                tuple(reversed(model_image_size)), Image.BICUBIC)
-            #resized_image = cv2.resize(image, (416, 416), interpolation = cv2.INTER_CUBIC)
-            image_data = np.array(resized_image, dtype='float32')
+        resized_image = image.resize(tuple(reversed(model_image_size)), Image.BICUBIC)
+        #resized_image = cv2.resize(image, (416, 416), interpolation = cv2.INTER_CUBIC)
+        image_data = np.array(resized_image, dtype='float32')
+        if verbose: print("resized image")
     else:
         # Due to skip connection + max pooling in YOLO_v2, inputs must have
         # width and height as multiples of 32.
@@ -93,19 +90,25 @@ def _main(image):
     image_data /= 255.
     image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
+    if verbose: print("added batch dimension")
+    feed_dict={
+        yolo_model.input: image_data,
+        input_image_shape: [image.size[1], image.size[0]],
+        K.learning_phase(): 0}
+
+    if verbose: print("made feed dict")
+
     out_boxes, out_scores, out_classes = sess.run(
         [boxes, scores, classes],
-        feed_dict={
-            yolo_model.input: image_data,
-            input_image_shape: [image.size[1], image.size[0]],
-            K.learning_phase(): 0
-        })
-    #print('Found {} boxes for {}'.format(len(out_boxes), image_file))
+        feed_dict=feed_dict)
+    if verbose: print('Found {} boxes for {}'.format(len(out_boxes), image_file))
 
     font = ImageFont.truetype(
-        font='/Library/Fonts/Arial.ttf',
-        size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+                              font='/Library/Fonts/Arial.ttf',
+                              size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
     thickness = (image.size[0] + image.size[1]) // 300
+
+    if verbose: print("start prediction")
 
     for i, c in reversed(list(enumerate(out_classes))):
         predicted_class = class_names[c]
@@ -145,27 +148,45 @@ def _main(image):
 
 if __name__ == "__main__":
 
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+    import time
+    import cv2
 
-	video_capture = cv2.VideoCapture(0)
+    camera = PiCamera()
+    camera.resolution = (640,480)
+    rawCapture = PiRGBArray(camera)
 
-	while True:
-		# Capture frame-by-frame
-		ret, frame = video_capture.read()
+    time.sleep(0.1)
 
-        print(ret)
-        if ret:
-    		cv2.imshow('Video', frame)
-		if frame is not None:
-			frame = scipy.misc.toimage(frame)
-			frame = _main(frame)
-			cv2.imshow('Video', np.asarray(frame))
-
-		if cv2.waitKey(24) & 0xFF == ord('q'):
-			break
+    camera.capture(rawCapture,format="bgr")
+    frame = rawCapture.array
+    cv2.imshow('Video',frame)
+    rawCapture.truncate(0)
 
 
+    for frame in camera.capture_continuous(rawCapture,format="bgr",use_video_port=True):
+        time.sleep(1)
+        #camera.capture(rawCapture,format="bgr")
+        #frame = rawCapture.array
+
+        ## Need a numpy.ndarray, shape of (height,width,dims)
+        #cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame.array)
+
+        frame = _main(frame)
+        cv2.imshow('Video', np.asarray(frame))
+        key = cv2.waitKey(1) & 0xFF
+
+        rawCapture.truncate(0)
+
+        if key == ord("q"):
+            break
+
+        # No loop now
+        break
 
 
-	video_capture.release()
-	cv2.destroyAllWindows()
-	sess.close()
+    capture.release()
+    cv2.destroyAllWindows()
+    sess.close()

@@ -4,6 +4,7 @@ import numpy as np
 from keras import backend as K
 from keras.models import load_model
 import tensorflow as tf
+
 from DLUtils import configs
 
 def pretrained_tiny_yolo():
