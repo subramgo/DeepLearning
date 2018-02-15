@@ -1,20 +1,17 @@
 # Tasks
 
-## Real-time Movement Detection
 
-## Object Bounding
+## Future Optimizations
 
-## Object Detection / Localizaiton
-
-using DLUtils/downloadimages.py, download images "boat in sea"
-stored in data/sea/boats/.
-
-* Image annotation.
-
-outside the virutalenvironment
-brew install qt qt4 
-brew install pyqt  # qt4 is deprecated
-pip install labelme
+  * optimize `cmake` builds for our platform
+    * [cmake config viewer](https://stackoverflow.com/a/42945360/1949791)
+    * [a head-start on opencv optimization](http://amritamaz.net/blog/opencv-config)
+  * remove opencv dependencies
+  * remove HDF5 dependencies
+  * 64-bit compatibility everywhere?
+  * arm7l targetted compilation
+  * overclock the Raspberry Pi
+  * check battery usage on realtime YOLO
 
 # Raspberry Pi
 
@@ -59,7 +56,7 @@ Don't run `pip install -r requirements.txt` on a Pi as it will choke on the larg
   * if keras doesn't install correctly, use `apt`
 
 #### [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
-  1. `sudo apt install libgtk2.0-dev and pkg-config -y` GTK2 provides critical functions
+  1. `sudo apt install libgtk2.0-dev libgtk-3-0 libgtk-3-dev pkg-config -y` GTK2 provides critical functions
   2. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
   3. check out same release version of each
   4. build opencv
@@ -74,6 +71,9 @@ Don't run `pip install -r requirements.txt` on a Pi as it will choke on the larg
   sudo apt install imagemagick
 
   pip3 install wand
+
+
+  http://amritamaz.net/blog/opencv-config
 
 ### PyQT
 
@@ -95,16 +95,6 @@ Don't run `pip install -r requirements.txt` on a Pi as it will choke on the larg
   * [Homepage](https://pjreddie.com/darknet/yolo/)
   * [TinyYOLO Keras-friendly H5 File](https://drive.google.com/open?id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5)
 
-
-## Future Optimizations
-
-  * remove HDF5 dependencies
-  * 64-bit compatibility
-  * arm7l targetted compilation
-  * overclock the Raspberry Pi
-  * check battery usage on realtime YOLO
-
-
 # Code
 
 ## Deep Learning Utilities
@@ -120,20 +110,6 @@ From the directory containing `setup.py`, install in your virtualenv thusly:
     pip install --editable .
 
 Now the packages listed in `setup.py` are installed in the current `pip` environment's library and available to all of the things we want to use them in listed above!
-
-## Web Services
-
-  * [REST Server](webservices/rest_server/README.md)
-  * [Web GUI Client for REST Service](webservices/webui/README.md)
-
-## Scripts
-
-Scalable scripts.
-
-
-## Notebooks
-
-Exploratory & development iPython notebooks.
 
 # Raspberry Pi Troubleshooting
 
@@ -151,4 +127,22 @@ Easiest & reliable way to install an OS image using `etcher`.
     - preconfigured for `armhf` base packages
     * only 32-bit runtime
   * [Ubuntu Desktop](https://www.ubuntu.com/download)
+
+# Projects
+
+## Real-time Movement Detection
+
+## Object Bounding
+
+## Object Detection / Localizaiton
+
+using DLUtils/downloadimages.py, download images "boat in sea"
+stored in data/sea/boats/.
+
+* Image annotation.
+
+outside the virutalenvironment
+brew install qt qt4 
+brew install pyqt  # qt4 is deprecated
+pip install labelme
 

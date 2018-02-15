@@ -43,7 +43,7 @@ def cafe_stream():
     cap = cv2.VideoCapture(uri)
 
     try:
-        return cap
+        yield cap
     finally:
         cap.release()
         cv2.destroyAllWindows()
