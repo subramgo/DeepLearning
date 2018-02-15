@@ -76,11 +76,14 @@ def _main(image):
     # Verify model, anchors, and classes are compatible
 
 
-
+    print(image.size)
+    print(model_image_size)
+    #image = np.asarray(image)
     if is_fixed_size:  # TODO: When resizing we can use minibatch input.
             resized_image = image.resize(
                 tuple(reversed(model_image_size)), Image.BICUBIC)
-            #resized_image = cv2.resize(image, (416, 416), interpolation = cv2.INTER_CUBIC)
+            #resized_image = image.resize((416, 416), Image.BICUBIC)
+            #resized_image = cv2.resize(image, (416, 416), interpolation=cv2.INTER_AREA)
             image_data = np.array(resized_image, dtype='float32')
     else:
         # Due to skip connection + max pooling in YOLO_v2, inputs must have
@@ -144,28 +147,21 @@ def _main(image):
 
 
 if __name__ == "__main__":
-
-
-	video_capture = cv2.VideoCapture(0)
-
-	while True:
-		# Capture frame-by-frame
-		ret, frame = video_capture.read()
-
-        print(ret)
+    video_capture = cv2.VideoCapture(0)
+    while True:
+        ret, frame = video_capture.read()
         if ret:
-    		cv2.imshow('Video', frame)
-		if frame is not None:
-			frame = scipy.misc.toimage(frame)
-			frame = _main(frame)
-			cv2.imshow('Video', np.asarray(frame))
+            cv2.imshow('Video', frame)
+            if frame is not None:
 
-		if cv2.waitKey(24) & 0xFF == ord('q'):
-			break
+                cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                frame = Image.fromarray(frame)
 
-
-
-
-	video_capture.release()
-	cv2.destroyAllWindows()
-	sess.close()
+                #frame = scipy.misc.toimage(frame)
+                frame = _main(frame)
+                cv2.imshow('Video', np.asarray(frame))
+        if cv2.waitKey(24) & 0xFF == ord('q'):
+            break
+    video_capture.release()
+    cv2.destroyAllWindows()
+    sess.close()
