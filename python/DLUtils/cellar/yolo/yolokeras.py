@@ -103,14 +103,24 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     from keras import backend as K
 
     box_scores = box_confidence * box_class_probs
+
     box_classes = K.argmax(box_scores, axis=-1)
     box_class_scores = K.max(box_scores, axis=-1)
-    prediction_mask = box_class_scores >= threshold
+    
+    #prediction_mask1 = box_class_scores >= threshold
+    prediction_mask = tf.where(box_class_scores >= threshold)
+
 
     # TODO: Expose tf.boolean_mask to Keras backend?
-    boxes = tf.boolean_mask(boxes, prediction_mask)
-    scores = tf.boolean_mask(box_class_scores, prediction_mask)
-    classes = tf.boolean_mask(box_classes, prediction_mask)
+    #boxes1 = tf.boolean_mask(boxes, prediction_mask1)
+    boxes = tf.gather_nd(boxes, prediction_mask)
+    #scores = tf.boolean_mask(box_class_scores, prediction_mask)
+    scores = tf.gather_nd(box_class_scores, prediction_mask)
+    #classes = tf.boolean_mask(box_classes, prediction_mask)
+    classes = tf.gather_nd(box_classes, prediction_mask)
+
+
+    #print(boxes1, boxes)
     return boxes, scores, classes
 
 
