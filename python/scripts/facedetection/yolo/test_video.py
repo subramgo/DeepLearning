@@ -10,7 +10,7 @@ from keras import backend as K
 from keras.models import load_model
 from PIL import Image, ImageDraw, ImageFont
 
-from DLUtils.cellar import yolo
+from DLUtils.cellar.yolo.yolokeras import yolo_eval, yolo_head
 from DLUtils import datafeed
 
 import scipy.misc
@@ -25,7 +25,7 @@ class_names = [
 ]
 
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-yolo_model = yolo.pretrained_tiny_yolo()
+yolo_model = load_model("../models/yolo/tiny_yolo.h5")
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
@@ -57,9 +57,9 @@ iou_threshold = 0.5
 
 # Generate output tensor targets for filtered bounding boxes.
 # TODO: Wrap these backend operations with Keras layers.
-yolo_outputs = yolo.yolo_head(yolo_model.output, anchors, len(class_names))
+yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
 input_image_shape = K.placeholder(shape=(2, ))
-boxes, scores, classes = yolo.yolo_eval(
+boxes, scores, classes = yolo_eval(
     yolo_outputs,
     input_image_shape,
     score_threshold=score_threshold,
@@ -72,7 +72,6 @@ def _main(image):
     #sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
     # Verify model, anchors, and classes are compatible
 
-<<<<<<< HEAD
 
     print(image.size)
     print(model_image_size)
@@ -113,7 +112,6 @@ def _main(image):
     out_boxes, out_scores, out_classes = sess.run(
         [boxes, scores, classes],
         feed_dict=feed_dict)
-    if verbose: print('Found {} boxes for {}'.format(len(out_boxes), image_file))
 
     font = ImageFont.truetype(
                               font='/Library/Fonts/Arial.ttf',
@@ -176,7 +174,7 @@ if __name__ == "__main__":
             break
     video_capture.release()
     cv2.destroyAllWindows()
-    sess.close()
+    xsess.close()
 
 """
     from picamera.array import PiRGBArray
