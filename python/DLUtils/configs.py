@@ -10,9 +10,10 @@ import os as _os
 from ast import literal_eval as _literal_eval
 
 def resolve_paths(path):
+    """ Check for paths relative to the package installation.
+        If given path begins with '/', search in '.' and '..' """
     my_path = _os.path.abspath(_os.path.dirname(__file__))
         
-    """ Check for paths relative to the package installation """
     if _os.path.isabs(path):
         _test = _os.path.join(my_path,'../..',path[1:])
         if _os.path.exists(_os.path.abspath(_test)):

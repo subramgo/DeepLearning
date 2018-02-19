@@ -42,12 +42,19 @@ Installing a `...cp34...` by renaming to `cp35` will result in binary incompatab
 
   1. `sudo apt-get install python3-pip python3-dev`
   2. [Increase Raspbian swap space](https://www.bitpi.co/2015/02/11/how-to-change-raspberry-pis-swapfile-size-on-rasbian/)
-    1. /etc/dphys-swapfile -> `CONF_SWAPFILE=1024`
-    2. `sudo /etc/init.d/dphys-swapfile stop; sudo /etc/init.d/dphys-swapfile start`
+      1. /etc/dphys-swapfile -> `CONF_SWAPFILE=1024`
+      2. `sudo /etc/init.d/dphys-swapfile stop; sudo /etc/init.d/dphys-swapfile start`
   3. build `bazel` from source 
   4. [build `tensorflow` using `bazel`](https://www.tensorflow.org/install/install_sources)
     * `bazel build -c opt --copt="-mfpu=neon-vfpv4" --copt="-funsafe-math-optimizations" --copt="-ftree-vectorize" --copt="-fomit-frame-pointer" --local_resources 1024,1.0,1.0 --verbose_failures tensorflow/tools/pip_package:build_pip_package --config=monolithic`
   5. `sudo pip3 install mock`
+
+
+On Raspbian 9.3 Stretch, python 3.5, and Bazel 0.10.0.
+
+The output wheel is `tensorflow-1.6.0rc1-cp35-cp35m-linux_armv7l.whl`.
+
+`pip3 install tensorflow-1.6.0rc1-cp35-cp35m-linux_armv7l.whl` 
 
 #### Keras & OpenCV
 
