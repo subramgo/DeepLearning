@@ -114,14 +114,16 @@ def _main(image):
         feed_dict=feed_dict)
 
     font = ImageFont.truetype(
-                              font='/Library/Fonts/Arial.ttf',
+                              font='/usr/share/fonts/truetype/lato/Lato-Medium.ttf',
                               size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
     thickness = (image.size[0] + image.size[1]) // 300
+    #font = 1
 
     if verbose: print("start prediction")
 
     for i, c in reversed(list(enumerate(out_classes))):
-        predicted_class = class_names[c]
+        c = int(c)
+        predicted_class = class_names[int(c)]
         box = out_boxes[i]
         score = out_scores[i]
 
@@ -157,9 +159,10 @@ def _main(image):
 
 
 if __name__ == "__main__":
-    video_capture = cv2.VideoCapture(0)
+    video_capture = cv2.VideoCapture(-1)
     while True:
         ret, frame = video_capture.read()
+        print(ret)
         if ret:
             cv2.imshow('Video', frame)
             if frame is not None:
