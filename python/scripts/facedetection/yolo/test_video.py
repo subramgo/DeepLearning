@@ -10,6 +10,7 @@ from keras import backend as K
 from keras.models import load_model
 from PIL import Image, ImageDraw, ImageFont
 
+from DLUtils.cellar.yolo import yolokeras
 from DLUtils.cellar.yolo.yolokeras import yolo_eval, yolo_head
 from DLUtils import datafeed
 
@@ -25,7 +26,8 @@ class_names = [
 ]
 
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-yolo_model = load_model("../models/yolo/tiny_yolo.h5")
+#yolo_model = load_model("../models/yolo/tiny_yolo.h5")
+yolo_model = yolokeras.pretrained_tiny_yolo()
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
