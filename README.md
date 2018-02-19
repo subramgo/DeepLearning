@@ -3,10 +3,11 @@
 
 ## Future Optimizations
 
-  * optimize `cmake` builds for our platform
+  * optimize tensorflow build for our platform
+  * remove opencv dependencies
+  * optimize `cmake` build of opencv for our platform
     * [cmake config viewer](https://stackoverflow.com/a/42945360/1949791)
     * [a head-start on opencv optimization](http://amritamaz.net/blog/opencv-config)
-  * remove opencv dependencies
   * remove HDF5 dependencies
   * 64-bit compatibility everywhere?
   * arm7l targetted compilation
@@ -21,7 +22,7 @@
   2. Python 3.4.2 makes the other installs easier/possible.
   3. `sudo apt purge wolfram-engine && sudo apt autoremove`
   3. `sudo apt update && sudo apt upgrade && sudo rpi-update && sudo reboot`
-  4. `sudo apt install build-essential screen vim git python3-dev cmake pkg-config libatlas-base-dev`
+  4. `sudo apt install build-essential screen vim git python3-dev libqt4-dev cmake pkg-config libatlas-base-dev`
   5. `sudo apt update && sudo apt upgrade -y`
   6. `sudo pip3 install numpy`
 
@@ -35,51 +36,31 @@ Don't run `pip install -r requirements.txt` on a Pi as it will choke on the larg
 
 #### [Tensorflow](https://github.com/samjabrahams/tensorflow-on-raspberry-pi/blob/master/GUIDE.md)
 
-##### Install Nightly Build
-
-  1. `wget http://ci.tensorflow.org/view/Nightly/job/nightly-pi-python3/39/artifact/output-artifacts/tensorflow-1.4.0-cp34-none-any.whl`
-  2. `pip3 install tensorflow-...`
+Installing a `...cp34...` by renaming to `cp35` will result in binary incompatability and bus errors.
 
 ##### Build from Source
 
   1. `sudo apt-get install python3-pip python3-dev`
   2. [Increase Raspbian swap space](https://www.bitpi.co/2015/02/11/how-to-change-raspberry-pis-swapfile-size-on-rasbian/)
-    1. /etc/dphys-swapfile -> `CONF_SWAPFILE=1024`
-    2. `sudo /etc/init.d/dphys-swapfile stop; sudo /etc/init.d/dphys-swapfile start`
+      1. /etc/dphys-swapfile -> `CONF_SWAPFILE=1024`
+      2. `sudo /etc/init.d/dphys-swapfile stop; sudo /etc/init.d/dphys-swapfile start`
   3. build `bazel` from source 
-  4. build `tensorflow` using `bazel`
+  4. [build `tensorflow` using `bazel`](https://www.tensorflow.org/install/install_sources)
+    * `bazel build -c opt --copt="-mfpu=neon-vfpv4" --copt="-funsafe-math-optimizations" --copt="-ftree-vectorize" --copt="-fomit-frame-pointer" --local_resources 1024,1.0,1.0 --verbose_failures tensorflow/tools/pip_package:build_pip_package --config=monolithic`
   5. `sudo pip3 install mock`
 
-#### Keras
 
-    sudo pip3 install keras pyyaml
+On Raspbian 9.3 Stretch, python 3.5, and Bazel 0.10.0.
+
+The output wheel is `tensorflow-1.6.0rc1-cp35-cp35m-linux_armv7l.whl`.
+
+`pip3 install tensorflow-1.6.0rc1-cp35-cp35m-linux_armv7l.whl` 
+
+#### Keras & OpenCV
+
+    sudo pip3 install keras pyyaml opencv-python
+
   * if keras doesn't install correctly, use `apt`
-
-#### [OpenCV](https://opencv.org) [via SE](https://raspberrypi.stackexchange.com/questions/69169/how-to-install-opencv-on-raspberry-pi-3-in-raspbian-jessie)
-  1. `sudo apt install libgtk2.0-dev libgtk-3-0 libgtk-3-dev pkg-config -y` GTK2 provides critical functions
-  2. download [opencv](https://github.com/opencv) and [opencv_contrib](https://github.com/opencv/opencv_contrib)
-  3. check out same release version of each
-  4. build opencv
-      1. `cd opencv && mkdir build && cd build`
-      2. `cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/workspace/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..`
-      3. `make -j3`
-          * if it appears to freeze or stall, don't panic. be patient. When patience runs out, hit CTRL-C to cancel and resume build with a `make`
-      4. `sudo make install`
-      5. `sudo ldconfig`
-  5. https://www.pyimagesearch.com/2015/03/30/accessing-the-raspberry-pi-camera-with-opencv-and-python/ connect picamera to OpenCV
-
-  sudo apt install imagemagick
-
-  pip3 install wand
-
-
-  http://amritamaz.net/blog/opencv-config
-
-### PyQT
-
-  * Try installing by `apt`
-    * `sudo apt install build-essential python3-dev libqt4-dev`
-
 
 
 ## Set up Pi Camera
@@ -87,6 +68,9 @@ Don't run `pip install -r requirements.txt` on a Pi as it will choke on the larg
   * [Quick Start](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera)
   * [Basic Docs](https://www.raspberrypi.org/documentation/usage/camera/python/README.md)
   * [Full Docs](http://picamera.readthedocs.io/en/release-1.13/recipes2.html)
+
+  5. https://www.pyimagesearch.com/2015/03/30/accessing-the-raspberry-pi-camera-with-opencv-and-python/ connect picamera to OpenCV
+
 
 ## TinyYOLO
 
