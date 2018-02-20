@@ -10,9 +10,9 @@ from DLUtils import configs
 
 def pretrained_tiny_yolo():
     """ fetch Tiny-YOLO model, implemented in Keras, loaded from H5 """
-    config = configs.Config()
     try:
-        model = load_model(configs.resolve_paths('/cellar/tiny_yolo.h5'))
+        return load_model(configs.resolve_paths('/cellar/tiny_yolo.h5'))
+
     except OSError:
         src_uri = "https://drive.google.com/uc?export=download&id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
 

@@ -27,8 +27,10 @@ class_names = [
 ]
 
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
-yolo_model = load_model("../models/yolo/tiny_yolo.h5")
-#yolo_model = yolokeras.pretrained_tiny_yolo()
+#yolo_model = load_model("../models/yolo/tiny_yolo.h5")
+yolo_model = yolokeras.pretrained_tiny_yolo()
+
+
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
