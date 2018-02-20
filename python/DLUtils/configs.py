@@ -9,13 +9,32 @@ import configparser as _cfgparser
 import os as _os
 from ast import literal_eval as _literal_eval
 
+def resolve_paths(path):
+    """ Check for paths relative to the package installation.
+        If given path begins with '/', search in '.' and '..' """
+    my_path = _os.path.abspath(_os.path.dirname(__file__))
+        
+    if _os.path.isabs(path):
+        _test = _os.path.join(my_path,'../..',path[1:])
+        if _os.path.exists(_os.path.abspath(_test)):
+            path = _os.path.abspath(_test)
+
+        _test = _os.path.join(my_path,'..',path[1:])
+        if _os.path.exists(_os.path.abspath(_test)):
+            path = _os.path.abspath(_test)
+
+    return path     
+
 class Config:
     def __init__(self):
         self.my_path = _os.path.abspath(_os.path.dirname(__file__))
-        self.config_path = '../settings/models.ini'
+        self.config_path = resolve_paths('/settings/models.ini')
 
         path = _os.path.join(self.my_path, self.config_path)
         self.load_configs(path)
+
+    def __call__(self,kwargs):
+        return self.get_section_dict(kwargs)
 
     def load_configs(self,filepath):
         """ Return dictionary for the given section and filepath """
@@ -30,20 +49,6 @@ class Config:
 
         return {k:self._eval(val) for k,val in dict(self._config[section]).items()}
 
-    def resolve_paths(self,path):
-        """ Check for paths relative to the package installation """
-        if _os.path.isabs(path):
-            _test = _os.path.join(self.my_path,'../..',path[1:])
-            if _os.path.exists(_os.path.abspath(_test)):
-                path = _os.path.abspath(_test)
-
-            _test = _os.path.join(self.my_path,'..',path[1:])
-            if _os.path.exists(_os.path.abspath(_test)):
-                path = _os.path.abspath(_test)
-
-        return path
-
-
     def _eval(self,value):
         """ Parse into Python objects using literal_eval. Resolve paths. """
         value = _literal_eval(value)
@@ -52,10 +57,12 @@ class Config:
         except NameError:
             basestring = str
         if isinstance(value,basestring):
-            value = self.resolve_paths(value)
+            value = resolve_paths(value)
         return value
 
-def get_configs(section_name):
+def get_configs(section_name = None):
     """ shorthand default way to grab configs and support other code """
-    config = Config()
-    return config.get_section_dict(section_name)
+    if section_name:
+        return Config()(section_name)
+    else:
+        return Config()(kwargs={})

@@ -11,7 +11,15 @@ from DLUtils import configs
 def pretrained_tiny_yolo():
     """ fetch Tiny-YOLO model, implemented in Keras, loaded from H5 """
     config = configs.Config()
-    return load_model(config.resolve_paths('/cellar/tiny_yolo.h5'))
+    try:
+        model = load_model(configs.resolve_paths('/cellar/tiny_yolo.h5'))
+    except OSError:
+        src_uri = "https://drive.google.com/uc?export=download&id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
+
+        print("Model not found. Downloading...")
+
+        # TODO wget "https://drive.google.com/uc?export=download&id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
+        print("download it yourself from {}".format(src_uri))
 
 
 def yolo_head(feats, anchors, num_classes):
@@ -116,7 +124,7 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     scores = tf.boolean_mask(box_class_scores, prediction_mask)
     classes = tf.boolean_mask(box_classes, prediction_mask)
     """
-    
+
     return boxes, scores, classes
 
 

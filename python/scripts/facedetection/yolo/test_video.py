@@ -10,10 +10,17 @@ from keras import backend as K
 from keras.models import load_model
 from PIL import Image, ImageDraw, ImageFont
 
+from DLUtils.cellar.yolo import yolokeras
 from DLUtils.cellar.yolo.yolokeras import yolo_eval, yolo_head
 from DLUtils import datafeed
 
 import scipy.misc
+
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import time
+import cv2
+
 
 anchors = np.array(
     [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
@@ -26,6 +33,7 @@ class_names = [
 
 sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
 yolo_model = load_model("../models/yolo/tiny_yolo.h5")
+#yolo_model = yolokeras.pretrained_tiny_yolo()
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
@@ -114,14 +122,16 @@ def _main(image):
         feed_dict=feed_dict)
 
     font = ImageFont.truetype(
-                              font='/Library/Fonts/Arial.ttf',
+                              font='/usr/share/fonts/truetype/lato/Lato-Medium.ttf',
                               size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
     thickness = (image.size[0] + image.size[1]) // 300
+    #font = 1
 
     if verbose: print("start prediction")
 
     for i, c in reversed(list(enumerate(out_classes))):
-        predicted_class = class_names[c]
+        c = int(c)
+        predicted_class = class_names[int(c)]
         box = out_boxes[i]
         score = out_scores[i]
 
@@ -157,68 +167,22 @@ def _main(image):
 
 
 if __name__ == "__main__":
-    video_capture = cv2.VideoCapture(0)
-    while True:
-        ret, frame = video_capture.read()
-        if ret:
-            cv2.imshow('Video', frame)
-            if frame is not None:
+    ### picamera
+    src = datafeed.stream.PiCam()
 
-                cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                frame = Image.fromarray(frame)
+    ### usb camera
+    #src = datafeed.stream.OpenCVStream(-1)
 
-                #frame = scipy.misc.toimage(frame)
-                frame = _main(frame)
-                cv2.imshow('Video', np.asarray(frame))
-        if cv2.waitKey(24) & 0xFF == ord('q'):
-            break
-    video_capture.release()
-    cv2.destroyAllWindows()
-    xsess.close()
+    ### rtsp camera
+    #src = datafeed.stream.OpenCVStream(datafeed._cafe_uri)
 
-"""
-    from picamera.array import PiRGBArray
-    from picamera import PiCamera
-    import time
-    import cv2
-
-    camera = PiCamera()
-    camera.resolution = (640,480)
-    rawCapture = PiRGBArray(camera)
-
-    time.sleep(0.1)
-
-    camera.capture(rawCapture,format="bgr")
-    frame = rawCapture.array
-    cv2.imshow('Video',frame)
-    rawCapture.truncate(0)
-
-
-    for frame in camera.capture_continuous(rawCapture,format="bgr",use_video_port=True):
-        time.sleep(1)
-        #camera.capture(rawCapture,format="bgr")
-        #frame = rawCapture.array
-
-        ## Need a numpy.ndarray, shape of (height,width,dims)
-        #cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-        frame = Image.fromarray(frame.array)
-
+    for frame in src.frame_generator():
+        frame = Image.fromarray(frame)
+        frame = scipy.misc.toimage(frame)
         frame = _main(frame)
         cv2.imshow('Video', np.asarray(frame))
-        key = cv2.waitKey(1) & 0xFF
 
-        rawCapture.truncate(0)
-
-        if key == ord("q"):
+        if cv2.waitKey(24) & 0xFF == ord('q'):
             break
 
-        # No loop now
-        break
 
-
-    capture.release()
->>>>>>> 6060ad8124dad80df86b143145000e6567897d1c
-    cv2.destroyAllWindows()
-    sess.close()
-
-    """

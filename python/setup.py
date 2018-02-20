@@ -6,4 +6,8 @@ setup(name='DLUtils',
       url='https://github.com/subramgo/DeepLearning',
       license='Restricted',
       packages=['DLUtils'],
+      install_requires=[],
+      python_requires='>=2.6',
       zip_safe=False)
+
+
