@@ -35,13 +35,15 @@ class Stream:
 ###################################################
 ###############   Picamera Stream   ###############
 ###################################################
-from picamera.array import PiRGBArray as _PiRGBArray
-from picamera import PiCamera as _PiCamera
 
 class PiCam(Stream):
     """ Wrapper for Picamera stream source """
-
+    
     def __init__(self,*args,**kwargs):
+    
+        from picamera.array import PiRGBArray as _PiRGBArray
+        from picamera import PiCamera as _PiCamera
+
         print("opening stream to PiCamera")
         self._camera = _PiCamera(framerate=3, resolution = (640,480) )
         self._camera.rotation=180

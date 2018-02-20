@@ -1,4 +1,3 @@
-import cv2
 import argparse
 import colorsys
 import imghdr
@@ -15,10 +14,6 @@ from DLUtils.cellar.yolo.yolokeras import yolo_eval, yolo_head
 from DLUtils import datafeed
 
 import scipy.misc
-
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import time
 import cv2
 
 
@@ -121,9 +116,19 @@ def _main(image):
         [boxes, scores, classes],
         feed_dict=feed_dict)
 
-    font = ImageFont.truetype(
-                              font='/usr/share/fonts/truetype/lato/Lato-Medium.ttf',
-                              size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+    
+    try:
+        font = ImageFont.truetype(
+                                  font='/usr/share/fonts/truetype/lato/Lato-Medium.ttf',
+                                  size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+    except OSError:
+        font = ImageFont.truetype(
+                                  font='/Library/Fonts/Arial.ttf',
+                                  size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+
+    
+
+
     thickness = (image.size[0] + image.size[1]) // 300
     #font = 1
 
@@ -168,10 +173,10 @@ def _main(image):
 
 if __name__ == "__main__":
     ### picamera
-    src = datafeed.stream.PiCam()
+    #src = datafeed.stream.PiCam()
 
     ### usb camera
-    #src = datafeed.stream.OpenCVStream(-1)
+    src = datafeed.stream.OpenCVStream(0)
 
     ### rtsp camera
     #src = datafeed.stream.OpenCVStream(datafeed._cafe_uri)
