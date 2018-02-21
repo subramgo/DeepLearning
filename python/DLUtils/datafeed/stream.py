@@ -191,5 +191,5 @@ def demo_filestream():
         src.preview_stream()
 
 if __name__ == '__main__':
-    usb_stream()
-    #cafe_stream()
+    demo_usb()
+    #demo_rtsp()

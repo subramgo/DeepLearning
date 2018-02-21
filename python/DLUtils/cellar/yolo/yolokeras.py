@@ -7,6 +7,7 @@ from keras.models import load_model
 import tensorflow as tf
 
 from DLUtils import configs
+from DLUtils import cellar
 
 def pretrained_tiny_yolo():
     """ fetch Tiny-YOLO model, implemented in Keras, loaded from H5 """
@@ -14,13 +15,14 @@ def pretrained_tiny_yolo():
         return load_model(configs.resolve_paths('/cellar/tiny_yolo.h5'))
 
     except OSError:
-        src_uri = "https://drive.google.com/uc?export=download&id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
+        src_gdrive_id = "1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
+        filepath = configs.resolve_paths('/cellar/tiny_yolo.h5')
 
-        print("Model not found. Downloading...")
+        print("Model not found. Downloading to '{}'...".format(filepath))
+        cellar.download_file_from_google_drive(src_gdrive_id,filepath)
+        print("Model downloaded.")
 
-        # TODO wget "https://drive.google.com/uc?export=download&id=1zm4diNjmf1-MOwFTQ8QhPrBSpQHJ1JM5"
-        print("download it yourself from {}".format(src_uri))
-
+        return load_model(filepath)
 
 def yolo_head(feats, anchors, num_classes):
     """Convert final layer features to bounding box parameters.
