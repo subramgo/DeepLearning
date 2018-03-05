@@ -231,7 +231,7 @@ def image_quality_model(input_shape, nb_classes):
     return model
 
 
-def build_model( traindir, trainlabel,modeldir,input_shape,batch_size):
+def build_model( traindir, trainlabel,modeldir,input_shape,epochs,batch_size):
 
 	epochs = 10
 	input_shape = (TARGET_WIDTH, TARGET_HEIGHT, NO_CHANNELS)
@@ -242,7 +242,7 @@ def build_model( traindir, trainlabel,modeldir,input_shape,batch_size):
 
 
 	train_generator = generator(traindir, trainlabel, batch_size=4)
-	hist = model.fit_generator(train_generator, steps_per_epoch=10, epochs=10)
+	hist = model.fit_generator(train_generator, steps_per_epoch=10, epochs=epochs)
 	
 
 
@@ -256,12 +256,15 @@ if __name__ == '__main__':
 	parser.add_argument("-trainlabel", help="Widerface train label file", type=str, action="store", dest="trainlabel")
 	parser.add_argument("-traindir", help="Widerface train image directory", type=str, action="store", dest="traindir")
 	parser.add_argument('-modeldir',help="model directory",type=str,action="store",dest="modeldir")
+	parser.add_argument('-epochs',help="Number of epochs",type=int,action="store",dest="epochs")
+	parser.add_argument('-batchsize',help="batchsize",type=int,action="store",dest="batchsize")
+
 
 
 
 	args = parser.parse_args()
 
-	build_model(args.traindir, args.trainlabel,args.modeldir,(TARGET_WIDTH, TARGET_HEIGHT),batch_size=16)
+	build_model(args.traindir, args.trainlabel,args.modeldir,(TARGET_WIDTH, TARGET_HEIGHT),epochs=args.epochs,batch_size=args.batchsize)
 
 	#train_generator = generator(args.traindir, args.trainlabel, batch_size=4)
 

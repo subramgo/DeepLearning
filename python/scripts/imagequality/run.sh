@@ -1,1 +1,1 @@
- python image_quality.py -trainlabel "/Users/gsubramanian/Downloads/wider_face_split/wider_face_train_bbx_gt.txt" -traindir "/Users/gsubramanian/Downloads/WIDER_train/images" -modeldir "/Users/gsubramanian/"
+ python image_quality.py -trainlabel "/Users/gsubramanian/Downloads/wider_face_split/wider_face_train_bbx_gt.txt" -traindir "/Users/gsubramanian/Downloads/WIDER_train/images" -modeldir "/Users/gsubramanian/" -epochs 10 -batchsize 32
