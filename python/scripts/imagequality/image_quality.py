@@ -11,10 +11,18 @@ from PIL import Image as pil_image
 from random import shuffle
 import numpy as np
 import keras.backend as K
+from keras.layers import Input, Conv2D, Dense,MaxPooling2D, Flatten, Activation,Dense, Dropout, BatchNormalization,GlobalAveragePooling2D
+from keras.models import Model
+from keras.backend import tf as ktf
+from keras import optimizers
+from keras.callbacks import History, EarlyStopping,ReduceLROnPlateau,CSVLogger,ModelCheckpoint
+from keras.applications import ResNet50
+
 
 TARGET_HEIGHT=416
 TARGET_WIDTH=416
 NO_CHANNELS=3
+NB_CLASSES=14
 
 #### Read the Label file in widerface format #############
 class Quality():
@@ -182,38 +190,64 @@ def generator(img_root_dir, label_file, batch_size=4):
 	Batch generates images and labels.
 	"""
 	labels = read_labels(label_file)
-	rnd_indx = np.random.randint(0, high=len(labels),size=batch_size)
 	path = img_root_dir + '/'
-	X = []
-	y = []
-	for i in rnd_indx:
-		labels[i].showme()
-		image_path = labels[i].image_file
-		image = pil_image.open(path + image_path)
-		image = image.resize((TARGET_WIDTH,TARGET_HEIGHT))
-		x = np.asarray(image, dtype=K.floatx())
-		X.append(x)
-		y.append(labels[i].image_quality)
 
-	X = np.asarray(X).reshape((batch_size, TARGET_WIDTH, TARGET_HEIGHT, NO_CHANNELS))
-	Y = np.asarray(y).reshape((batch_size,14))
+	while True:
+		rnd_indx = np.random.randint(0, high=len(labels),size=batch_size)
+		X = []
+		y = []
 
+		for i in rnd_indx:
+			#labels[i].showme()
+			image_path = labels[i].image_file
+			image = pil_image.open(path + image_path)
+			image = image.resize((TARGET_WIDTH,TARGET_HEIGHT))
+			x = np.asarray(image, dtype=K.floatx())
+			X.append(x)
+			y.append(labels[i].image_quality)
 
-	yield X,Y
-
-
-
+		X = np.asarray(X).reshape((batch_size, TARGET_WIDTH, TARGET_HEIGHT, NO_CHANNELS))
+		Y = np.asarray(y).reshape((batch_size,14))
 
 
-
+		yield (X,Y)
 
 
 
+def image_quality_model(input_shape, nb_classes):
+
+    resnet_base = ResNet50(include_top = False, weights = 'imagenet',input_tensor = None, input_shape = input_shape ,pooling = 'max')
+
+    for layer in resnet_base.layers:
+    	layer.trainable = False
+    
+    x = Dense(1024, activation = "relu",name='dense-1')(resnet_base.output)
+    x = Dense(512, activation = "relu",name='dense-2')(x)
+    x = Dense(512, activation ="relu",name='dense-3')(x)
+    x = Dense(256, activation ="relu",name='dense-4')(x)
+    predictions = Dense(nb_classes, activation="softmax",name="softmax")(x)
+    model = Model(inputs = resnet_base.input, outputs = predictions)
+
+    return model
 
 
+def build_model( traindir, trainlabel,modeldir,input_shape,batch_size):
+
+	epochs = 10
+	input_shape = (TARGET_WIDTH, TARGET_HEIGHT, NO_CHANNELS)
+	model = image_quality_model(input_shape, NB_CLASSES)
+	model.compile(optimizer = 'sgd', loss = "categorical_crossentropy", metrics = ["accuracy"])
+
+	#for i in range(epochs):
 
 
+	train_generator = generator(traindir, trainlabel, batch_size=4)
+	hist = model.fit_generator(train_generator, steps_per_epoch=10, epochs=10)
+	
 
+
+	model.save_weights(modeldir + '/img_quality_weights.h5')
+	model.save(modeldir + '/img_quality_model.h5')
 
 
 
@@ -221,15 +255,20 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-trainlabel", help="Widerface train label file", type=str, action="store", dest="trainlabel")
 	parser.add_argument("-traindir", help="Widerface train image directory", type=str, action="store", dest="traindir")
+	parser.add_argument('-modeldir',help="model directory",type=str,action="store",dest="modeldir")
 
 
 
 	args = parser.parse_args()
 
-	train_gen = generator(args.traindir, args.trainlabel, batch_size=4)
-	X,Y = next(train_gen)
-	print(X.shape)
-	print(Y.shape)
+	build_model(args.traindir, args.trainlabel,args.modeldir,(TARGET_WIDTH, TARGET_HEIGHT),batch_size=16)
+
+	#train_generator = generator(args.traindir, args.trainlabel, batch_size=4)
+
+	#for i in range(10):
+	#	x,y = next(train_generator)
+
+
 
 
 
