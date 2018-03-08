@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from DLUtils.cellar.yolo.yolokeras import yolo_eval, yolo_head
 from DLUtils import datafeed
-
+import time
 import scipy.misc
 
 anchors = np.array(
@@ -160,11 +160,14 @@ def _main(image):
 
 if __name__ == "__main__":
     video_capture = cv2.VideoCapture(-1)
+    video_capture.set(4,640)
+    video_capture.set(5,480)
+    video_capture.set(6,15)
     while True:
         ret, frame = video_capture.read()
         print(ret)
         if ret:
-            cv2.imshow('Video', frame)
+            #cv2.imshow('Video', frame)
             if frame is not None:
 
                 cv2_im = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
@@ -173,11 +176,12 @@ if __name__ == "__main__":
                 #frame = scipy.misc.toimage(frame)
                 frame = _main(frame)
                 cv2.imshow('Video', np.asarray(frame))
+                #time.sleep(1)
         if cv2.waitKey(24) & 0xFF == ord('q'):
             break
     video_capture.release()
     cv2.destroyAllWindows()
-    xsess.close()
+    sess.close()
 
 """
     from picamera.array import PiRGBArray
