@@ -30,7 +30,6 @@ sess = K.get_session()  # TODO: Remove dependence on Tensorflow session.
 #yolo_model = load_model("../models/yolo/tiny_yolo.h5")
 yolo_model = yolokeras.pretrained_tiny_yolo()
 
-
 num_classes = len(class_names)
 num_anchors = len(anchors)
 
@@ -118,7 +117,7 @@ def _main(image):
         [boxes, scores, classes],
         feed_dict=feed_dict)
 
-    
+
     try:
         font = ImageFont.truetype(
                                   font='/usr/share/fonts/truetype/lato/Lato-Medium.ttf',
@@ -128,7 +127,7 @@ def _main(image):
                                   font='/Library/Fonts/Arial.ttf',
                                   size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
 
-    
+
 
 
     thickness = (image.size[0] + image.size[1]) // 300

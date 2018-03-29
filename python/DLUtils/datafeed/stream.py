@@ -48,13 +48,15 @@ class Stream:
 
 class PiCam(Stream):
     """ Wrapper for Picamera stream source """
-    
+
     def __init__(self,*args,**kwargs):
         from picamera.array import PiRGBArray as _PiRGBArray
         from picamera import PiCamera as _PiCamera
+        self._PiRGBArray = _PiRGBArray
+        self._PiCamera = _PiCamera
 
         print("opening stream to PiCamera")
-        self._camera = _PiCamera(framerate=3, resolution = (640,480) )
+        self._camera = self._PiCamera(framerate=3, resolution = (640,480) )
         self._camera.rotation=180
 
     def __enter__(self,*args,**kwargs):
@@ -70,7 +72,7 @@ class PiCam(Stream):
         self.__exit__()
 
     def frame_generator(self):
-        rawCapture = _PiRGBArray(self._camera)
+        rawCapture = self._PiRGBArray(self._camera)
         self._camera.capture(rawCapture,format="bgr")
         frame = rawCapture.array
         while frame is not None:
@@ -86,18 +88,18 @@ class PiCam(Stream):
 ###################################################
 class FileStream(Stream):
     """ Access a directory of image files, and provide
-        them in a loop to simulate a stream. """    
+        them in a loop to simulate a stream. """
     def __init__(self,path,loop=True):
         """ Grab list of files and sort by numbers in the file names. """
         import os
         import re
-        
+
         self._loop = loop
         self._path = path
 
         _files = os.listdir(path)
         print("Found {} files in {}.".format(len(_files),path))
-        
+
         _files = list(zip(_files, [int(re.findall('\d+',name)[0]) for name in _files]))
         _files.sort(key =  lambda x: x[1])
         self._files = _files
