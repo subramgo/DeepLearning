@@ -16,6 +16,16 @@
 
 # Raspberry Pi
 
+### SD Card Cloning
+
+Locate the SD card using `diskutil list`.
+
+    sudo dd if=/dev/rdisk2 | gzip -c > ~/Desktop/raspberrypi.dmg.zip
+
+  * `dd` for byte copying
+  * `rdisk2` instead of `disk2` for faster access on Mac
+  * `gzip` to compress output, try to quickly remove empty space from image
+
 ### OS Prep
 
   1. Use 64-bit Raspbian. 
