@@ -180,7 +180,7 @@ if __name__ == "__main__":
     src = datafeed.stream.OpenCVStream(0)
 
     ### rtsp camera
-    #src = datafeed.stream.OpenCVStream(datafeed._cafe_uri)
+    #src = datafeed.stream.OpenCVStream(datafeed.stream._cafe_uri)
 
     for frame in src.frame_generator():
         frame = Image.fromarray(frame)

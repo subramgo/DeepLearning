@@ -1,6 +1,7 @@
 """
     Image Data Streaming Sources
 """
+import cv2 as _cv2
 
 class Stream:
     """
@@ -29,7 +30,8 @@ class Stream:
 
     def preview_stream(self):
         """ Display stream in an OpenCV window until "q" key is pressed """
-        import cv2 as _cv2
+        _cv2.startWindowThread()
+        
         for frame in self.frame_generator():
             if frame is not None:
                 _cv2.imshow('Video', frame)
@@ -40,7 +42,9 @@ class Stream:
             key = _cv2.waitKey(1) & 0xFF
             if key == ord("q"):
                 break
+        _cv2.waitKey(1)
         _cv2.destroyAllWindows()
+        _cv2.waitKey(1)
 
 ###################################################
 ###############   Picamera Stream   ###############
@@ -48,13 +52,15 @@ class Stream:
 
 class PiCam(Stream):
     """ Wrapper for Picamera stream source """
-    
+
     def __init__(self,*args,**kwargs):
         from picamera.array import PiRGBArray as _PiRGBArray
         from picamera import PiCamera as _PiCamera
+        self._PiRGBArray = _PiRGBArray
+        self._PiCamera = _PiCamera
 
         print("opening stream to PiCamera")
-        self._camera = _PiCamera(framerate=3, resolution = (640,480) )
+        self._camera = self._PiCamera(framerate=3, resolution = (640,480) )
         self._camera.rotation=180
 
     def __enter__(self,*args,**kwargs):
@@ -70,7 +76,7 @@ class PiCam(Stream):
         self.__exit__()
 
     def frame_generator(self):
-        rawCapture = _PiRGBArray(self._camera)
+        rawCapture = self._PiRGBArray(self._camera)
         self._camera.capture(rawCapture,format="bgr")
         frame = rawCapture.array
         while frame is not None:
@@ -86,18 +92,18 @@ class PiCam(Stream):
 ###################################################
 class FileStream(Stream):
     """ Access a directory of image files, and provide
-        them in a loop to simulate a stream. """    
+        them in a loop to simulate a stream. """
     def __init__(self,path,loop=True):
         """ Grab list of files and sort by numbers in the file names. """
         import os
         import re
-        
+
         self._loop = loop
         self._path = path
 
         _files = os.listdir(path)
         print("Found {} files in {}.".format(len(_files),path))
-        
+
         _files = list(zip(_files, [int(re.findall('\d+',name)[0]) for name in _files]))
         _files.sort(key =  lambda x: x[1])
         self._files = _files
@@ -105,12 +111,14 @@ class FileStream(Stream):
     def __enter__(self,*args,**kwargs):
         """ Returns the object which later will have __exit__ called.
             This relationship creates a context manager. """
+        _cv2.startWindowThread()
         return self
 
     def __exit__(self, type=None, value=None, traceback=None):
         """ Together with __enter__, allows support for with- clauses. """
-        self._stream.release()
-        self._cv2.destroyAllWindows()
+        _cv2.waitKey(1)
+        _cv2.destroyAllWindows()
+        _cv2.waitKey(1)
 
     def frame_generator(self):
         from PIL import Image
@@ -121,7 +129,7 @@ class FileStream(Stream):
         while True:
             for image in _files:
                 try:
-                    yield np.asarray(scipy.misc.toimage(Image.open(os.path.join(self._path,_files.pop()[0]))))
+                    yield np.asarray(scipy.misc.toimage(Image.open(os.path.join(self._path,image[0]))))
                 except IndexError:
                     pass
             print("used all files")
@@ -143,22 +151,22 @@ class OpenCVStream(Stream):
     """ Wrapper for OpenCV stream sources to support with-clauses and other conveniences """
 
     def __init__(self,*args,**kwargs):
-        import cv2 as _cv2
-        self._cv2 = _cv2
-
         print("opening stream to {}".format(args[0]))
         self._stream = _cv2.VideoCapture(*args,**kwargs)
 
     def __enter__(self,*args,**kwargs):
         """ Returns the object which later will have __exit__ called.
             This relationship creates a context manager. """
+        _cv2.startWindowThread()
         return self
 
     def __exit__(self, type=None, value=None, traceback=None):
         """ Together with __enter__, allows support for with- clauses. """
         print("closing stream")
         self._stream.release()
-        self._cv2.destroyAllWindows()
+        _cv2.waitKey(1)
+        _cv2.destroyAllWindows()
+        _cv2.waitKey(1)
 
     def frame_generator(self):
         still_open,frame = self._stream.read()
@@ -170,14 +178,15 @@ class OpenCVStream(Stream):
 ###############       Examples      ###############
 ###################################################
 def _cafe_uri():
-    return "rtsp://10.38.5.145/ufirststream/"
+    return "rtsp://10.38.5.145/ufirststream"
 
 def demo_picam():
     with PiCam() as src:
         src.preview_stream()
 
 def demo_usb():
-    with OpenCVStream(-1) as cap:
+    ### device id 0 or -1 ?
+    with OpenCVStream(0) as cap:
         cap.preview_stream()
 
 def demo_rtsp():
