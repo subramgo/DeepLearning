@@ -6,6 +6,7 @@ test.jpg
 
 .ipynb_checkpoints
 data/
+dlib/
 models/
 tensorflow/
 *.pydevproject
