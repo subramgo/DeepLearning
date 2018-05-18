@@ -20,11 +20,15 @@
 
 Locate the SD card using `diskutil list`.
 
-    sudo dd if=/dev/rdisk2 | gzip -c > ~/Desktop/raspberrypi.dmg.zip
+    sudo dd -bs=10m if=/dev/rdisk2 | gzip --fast -c > ~/Desktop/raspberrypi.dmg.zip
 
   * `dd` for byte copying
+  * `-bs=10m` set large block sizes to reduce 
   * `rdisk2` instead of `disk2` for faster access on Mac
   * `gzip` to compress output, try to quickly remove empty space from image
+  * `--fast` so gzip doesn't try too hard
+
+You can query `dd` status using `ctrl+t`.
 
 ### OS Prep
 
