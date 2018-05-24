@@ -18,17 +18,27 @@
 
 ### SD Card Cloning
 
+[via](https://computers.tutsplus.com/articles/how-to-clone-raspberry-pi-sd-cards-using-the-command-line-in-os-x--mac-59911)
+[and](https://superuser.com/questions/760097/why-is-piping-dd-through-gzip-so-much-faster-than-a-direct-copy)
+
 Locate the SD card using `diskutil list`.
 
-    sudo dd -bs=10m if=/dev/rdisk2 | gzip --fast -c > ~/Desktop/raspberrypi.dmg.zip
+    sudo dd -bs=4m if=/dev/rdisk2 | pv -s 64G | dd -bs=4m -of=~/Desktop/raspberrypi.dmg.zip
 
   * `dd` for byte copying
   * `-bs=10m` set large block sizes to reduce 
   * `rdisk2` instead of `disk2` for faster access on Mac
-  * `gzip` to compress output, try to quickly remove empty space from image
-  * `--fast` so gzip doesn't try too hard
+  * `pv` to show progress while running and 
 
-You can query `dd` status using `ctrl+t`.
+You can query `dd` status using `ctrl+t` if not using `pv`:
+
+    diskutil unmountDisk /dev/disk2
+    sudo newfs_msdos -F 16 /dev/disk2
+    sudo dd bs=4m if=raspberrypi.dmg | pv -s 64G | sudo dd bs=4m of=/dev/disk2
+
+
+    sudo dd bs=4m if=raspberrypi.dmg | sudo dd bs=4m of=/dev/disk2
+
 
 ### OS Prep
 
