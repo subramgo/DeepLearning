@@ -18,23 +18,27 @@
 
 ### SD Card Cloning
 
-[via](https://computers.tutsplus.com/articles/how-to-clone-raspberry-pi-sd-cards-using-the-command-line-in-os-x--mac-59911)
-[and](https://superuser.com/questions/760097/why-is-piping-dd-through-gzip-so-much-faster-than-a-direct-copy)
+via [here](https://computers.tutsplus.com/articles/how-to-clone-raspberry-pi-sd-cards-using-the-command-line-in-os-x--mac-59911)
+and [here](https://superuser.com/questions/760097/why-is-piping-dd-through-gzip-so-much-faster-than-a-direct-copy)
 
+#### Create Image
 Locate the SD card using `diskutil list`.
 
-    sudo dd -bs=4m if=/dev/rdisk2 | pv -s 64G | dd -bs=4m -of=~/Desktop/raspberrypi.dmg.zip
+    sudo dd bs=4m if=/dev/rdisk2 | pv -s 64G | dd bs=4m of=~/Documents/AkshiPi.dmg.sdcard
 
   * `dd` for byte copying
-  * `-bs=10m` set large block sizes to reduce 
+  * `bs=4m` sets larger block size to GREATLY reduce transfer time
   * `rdisk2` instead of `disk2` for faster access on Mac
-  * `pv` to show progress while running and 
+  * `pv` to show progress while running
+    * You can query `dd` status using `ctrl+t` if not using `pv`:
 
-You can query `dd` status using `ctrl+t` if not using `pv`:
+#### Deploy Image
+
+Try `etcher` with image name ending in '.sdcard' extension?
 
     diskutil unmountDisk /dev/disk2
     sudo newfs_msdos -F 16 /dev/disk2
-    sudo dd bs=4m if=raspberrypi.dmg | pv -s 64G | sudo dd bs=4m of=/dev/disk2
+    sudo dd bs=4m if=AkshiPi.dmg.zip | pv -s 60G | sudo dd bs=4m of=/dev/disk2
 
 
     sudo dd bs=4m if=raspberrypi.dmg | sudo dd bs=4m of=/dev/disk2
